@@ -191,7 +191,7 @@ export default function UjianOnline() {
         <button
           onClick={() => cariUjian()}
           disabled={memuat}
-          className="mt-4 w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="mt-4 w-full py-2 rounded-lg bg-ink-900 text-paper font-medium hover:bg-ink-800 disabled:opacity-50"
         >
           {memuat ? 'Mencari...' : 'Lanjut'}
         </button>
@@ -253,7 +253,7 @@ export default function UjianOnline() {
             setTahap('kerjakan');
           }}
           disabled={cekStatusLoading || (sudahMengerjakan !== null && sudahMengerjakan !== false)}
-          className="mt-4 w-full py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 w-full py-2 rounded-lg bg-ink-900 text-paper font-medium hover:bg-ink-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Mulai Kerjakan
         </button>
@@ -287,7 +287,7 @@ export default function UjianOnline() {
                 <label
                   key={huruf}
                   className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer mb-1 ${
-                    jawaban[s.id] === hurufAsli ? 'bg-blue-50 border border-blue-300' : ''
+                    jawaban[s.id] === hurufAsli ? 'bg-brass-400/10 border border-brass-400' : ''
                   }`}
                 >
                   <input
