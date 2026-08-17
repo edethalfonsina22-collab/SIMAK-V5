@@ -303,7 +303,7 @@ export default function SuratKeteranganForm({ onSaved }) {
             type="button"
             onClick={() => gantiJenis(j.key)}
             className={`px-4 py-2 rounded ${
-              jenis === j.key ? "bg-blue-600 text-white" : "bg-gray-100"
+              jenis === j.key ? "bg-ink-900 text-paper" : "bg-gray-100"
             }`}
           >
             {j.label}
@@ -314,7 +314,7 @@ export default function SuratKeteranganForm({ onSaved }) {
           type="button"
           onClick={() => gantiJenis(MODE_BEBAN_MENGAJAR)}
           className={`px-4 py-2 rounded ${
-            jenis === MODE_BEBAN_MENGAJAR ? "bg-blue-600 text-white" : "bg-gray-100"
+            jenis === MODE_BEBAN_MENGAJAR ? "bg-ink-900 text-paper" : "bg-gray-100"
           }`}
         >
           Generate Beban Mengajar
@@ -452,7 +452,7 @@ export default function SuratKeteranganForm({ onSaved }) {
                 <button
                   type="button"
                   onClick={() => exportSuratToDocx(suratTersimpan, sekolah)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                  className="bg-ink-900 text-paper px-4 py-2 rounded"
                 >
                   Unduh DOCX
                 </button>
