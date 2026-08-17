@@ -85,29 +85,29 @@ export default function Agenda() {
 
   function KartuAgenda({ d }) {
     return (
-      <div className="bg-white rounded-xl border border-[#6b0f1a]/10 shadow-sm p-4 flex items-start justify-between gap-3">
+      <div className="bg-white rounded-xl border border-[#1E4429]/10 shadow-sm p-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-medium text-[#3b0a0a]">{d.judul}</p>
-          <p className="text-sm text-[#6b0f1a]/60 mt-0.5 flex items-center gap-1.5">
+          <p className="font-medium text-[#0F2318]">{d.judul}</p>
+          <p className="text-sm text-[#1E4429]/60 mt-0.5 flex items-center gap-1.5">
             <CalendarDays size={14} /> {formatTanggal(d.tanggal_mulai)}
             {d.tanggal_selesai && ` — ${formatTanggal(d.tanggal_selesai)}`}
           </p>
           {d.lokasi && (
-            <p className="text-sm text-[#6b0f1a]/60 mt-0.5 flex items-center gap-1.5">
+            <p className="text-sm text-[#1E4429]/60 mt-0.5 flex items-center gap-1.5">
               <MapPin size={14} /> {d.lokasi}
             </p>
           )}
           {d.penanggung_jawab && (
-            <p className="text-sm text-[#6b0f1a]/60 mt-0.5 flex items-center gap-1.5">
+            <p className="text-sm text-[#1E4429]/60 mt-0.5 flex items-center gap-1.5">
               <User size={14} /> {d.penanggung_jawab}
             </p>
           )}
-          {d.deskripsi && <p className="text-sm text-[#6b0f1a]/70 mt-2">{d.deskripsi}</p>}
+          {d.deskripsi && <p className="text-sm text-[#1E4429]/70 mt-2">{d.deskripsi}</p>}
         </div>
         {isAdmin && (
           <div className="flex items-center gap-1 shrink-0">
-            <button className="p-1.5 rounded-md hover:bg-[#6b0f1a]/10 text-[#6b0f1a]" onClick={() => openEdit(d)}><Pencil size={15} /></button>
-            <button className="p-1.5 rounded-md hover:bg-[#6b0f1a]/10 text-[#8f1f22]" onClick={() => handleDelete(d.id)}><Trash2 size={15} /></button>
+            <button className="p-1.5 rounded-md hover:bg-[#1E4429]/10 text-[#1E4429]" onClick={() => openEdit(d)}><Pencil size={15} /></button>
+            <button className="p-1.5 rounded-md hover:bg-[#1E4429]/10 text-[#B91C1C]" onClick={() => handleDelete(d.id)}><Trash2 size={15} /></button>
           </div>
         )}
       </div>
@@ -119,24 +119,24 @@ export default function Agenda() {
       title="Agenda Sekolah"
       subtitle={`${data.length} kegiatan tercatat`}
       actions={isAdmin && (
-        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors shadow-sm shadow-[#6b0f1a]/30" onClick={openAdd}>
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors shadow-sm shadow-[#1E4429]/30" onClick={openAdd}>
           <Plus size={16} /> Tambah Kegiatan
         </button>
       )}
     >
-      <div className="min-h-screen bg-gradient-to-b from-[#fdf3f1] to-[#f7e6e3] -m-4 p-4 rounded-xl">
-      {loading && <p className="text-center py-8 text-[#6b0f1a]/50 text-sm">Memuat data...</p>}
+      <div className="min-h-screen bg-gradient-to-b from-[#F5F9F2] to-[#EAF3EA] -m-4 p-4 rounded-xl">
+      {loading && <p className="text-center py-8 text-[#1E4429]/50 text-sm">Memuat data...</p>}
 
       {!loading && (
         <div className="space-y-6">
           <div>
-            <h3 className="font-display font-semibold text-[#3b0a0a] mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-5 rounded-full bg-[#d4a017]"></span>
+            <h3 className="font-display font-semibold text-[#0F2318] mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-5 rounded-full bg-[#E8B33D]"></span>
               Akan Datang
             </h3>
             <div className="space-y-3">
               {akanDatang.length === 0 && (
-                <p className="text-sm text-[#6b0f1a]/50">Belum ada kegiatan mendatang.</p>
+                <p className="text-sm text-[#1E4429]/50">Belum ada kegiatan mendatang.</p>
               )}
               {akanDatang.map((d) => <KartuAgenda key={d.id} d={d} />)}
             </div>
@@ -144,7 +144,7 @@ export default function Agenda() {
 
           {sudahLewat.length > 0 && (
             <div>
-              <h3 className="font-display font-semibold text-[#3b0a0a] mb-3 opacity-60">Sudah Berlalu</h3>
+              <h3 className="font-display font-semibold text-[#0F2318] mb-3 opacity-60">Sudah Berlalu</h3>
               <div className="space-y-3 opacity-60">
                 {sudahLewat.reverse().map((d) => <KartuAgenda key={d.id} d={d} />)}
               </div>
@@ -154,75 +154,75 @@ export default function Agenda() {
       )}
 
       {showForm && (
-        <div className="fixed inset-0 bg-[#3b0a0a]/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 border-t-4 border-[#6b0f1a]">
+        <div className="fixed inset-0 bg-[#0F2318]/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 border-t-4 border-[#1E4429]">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-lg font-semibold text-[#3b0a0a]">
+              <h2 className="font-display text-lg font-semibold text-[#0F2318]">
                 {editingId ? 'Ubah Kegiatan' : 'Tambah Kegiatan'}
               </h2>
-              <button className="p-1.5 rounded-md hover:bg-[#6b0f1a]/10 text-[#6b0f1a]" onClick={() => setShowForm(false)}><X size={18} /></button>
+              <button className="p-1.5 rounded-md hover:bg-[#1E4429]/10 text-[#1E4429]" onClick={() => setShowForm(false)}><X size={18} /></button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Judul Kegiatan *</label>
+                <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Judul Kegiatan *</label>
                 <input
                   required
-                  className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                  className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                   value={form.judul}
                   onChange={(e) => setForm({ ...form, judul: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Mulai *</label>
+                  <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Mulai *</label>
                   <input
                     required
                     type="datetime-local"
-                    className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                    className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                     value={form.tanggal_mulai}
                     onChange={(e) => setForm({ ...form, tanggal_mulai: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Selesai (opsional)</label>
+                  <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Selesai (opsional)</label>
                   <input
                     type="datetime-local"
-                    className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                    className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                     value={form.tanggal_selesai}
                     onChange={(e) => setForm({ ...form, tanggal_selesai: e.target.value })}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Lokasi</label>
+                <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Lokasi</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                  className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                   value={form.lokasi}
                   onChange={(e) => setForm({ ...form, lokasi: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Penanggung Jawab</label>
+                <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Penanggung Jawab</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                  className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                   value={form.penanggung_jawab}
                   onChange={(e) => setForm({ ...form, penanggung_jawab: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#6b0f1a]/70 mb-1">Deskripsi</label>
+                <label className="block text-xs font-medium text-[#1E4429]/70 mb-1">Deskripsi</label>
                 <textarea
-                  className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+                  className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
                   rows={3}
                   value={form.deskripsi}
                   onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#f7e6e3] text-[#6b0f1a] hover:bg-[#efd3ce] transition-colors" onClick={() => setShowForm(false)}>
+                <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#EAF3EA] text-[#1E4429] hover:bg-[#DBE9DB] transition-colors" onClick={() => setShowForm(false)}>
                   Batal
                 </button>
-                <button type="submit" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors" disabled={saving}>
+                <button type="submit" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors" disabled={saving}>
                   {saving && <Loader2 size={16} className="animate-spin" />}
                   Simpan
                 </button>
