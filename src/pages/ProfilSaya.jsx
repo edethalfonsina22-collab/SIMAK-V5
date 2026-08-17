@@ -189,7 +189,7 @@ export default function ProfilSaya() {
     <Layout title="Profil Saya" subtitle="Data diri dan foto profil Anda">
       <form onSubmit={handleSave} className="max-w-2xl space-y-5">
         {/* Kartu identitas — background biru tua (navy), kontras elegan dengan aksen emas */}
-        <div className="relative overflow-hidden rounded-xl p-6 flex items-center justify-between gap-5 bg-gradient-to-br from-blue-900 to-blue-950">
+        <div className="relative overflow-hidden rounded-xl p-6 flex items-center justify-between gap-5 bg-gradient-to-br from-ink-900 to-ink-950">
           {/* Dekorasi lingkaran samar di background, senada dengan aksen bulat di identitas guru */}
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
           <div className="absolute -bottom-14 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
@@ -211,7 +211,7 @@ export default function ProfilSaya() {
                 patternTransform="rotate(8)"
               >
                 {/* motif kawung: empat lengkung elips mengelilingi titik pusat */}
-                <g fill="none" stroke="#d4af37" strokeWidth="1.1">
+                <g fill="none" stroke="#E8B33D" strokeWidth="1.1">
                   <ellipse cx="36" cy="24" rx="9" ry="14" opacity="0.55" />
                   <ellipse cx="36" cy="48" rx="9" ry="14" opacity="0.55" />
                   <ellipse cx="24" cy="36" rx="14" ry="9" opacity="0.55" />
@@ -222,20 +222,20 @@ export default function ProfilSaya() {
                 <path
                   d="M0 72 L18 54 L36 72 L54 54 L72 72"
                   fill="none"
-                  stroke="#d4af37"
+                  stroke="#E8B33D"
                   strokeWidth="0.8"
                   opacity="0.35"
                 />
                 <path
                   d="M0 0 L18 18 L0 36"
                   fill="none"
-                  stroke="#d4af37"
+                  stroke="#E8B33D"
                   strokeWidth="0.8"
                   opacity="0.3"
                 />
-                <circle cx="8" cy="8" r="1.3" fill="#d4af37" opacity="0.4" />
-                <circle cx="64" cy="16" r="1.3" fill="#d4af37" opacity="0.4" />
-                <circle cx="16" cy="64" r="1.3" fill="#d4af37" opacity="0.4" />
+                <circle cx="8" cy="8" r="1.3" fill="#E8B33D" opacity="0.4" />
+                <circle cx="64" cy="16" r="1.3" fill="#E8B33D" opacity="0.4" />
+                <circle cx="16" cy="64" r="1.3" fill="#E8B33D" opacity="0.4" />
               </pattern>
               <linearGradient id="batikFade" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stopColor="#000000" stopOpacity="0" />
@@ -268,7 +268,7 @@ export default function ProfilSaya() {
             </div>
             <div className="min-w-0">
               <p className="font-display font-semibold text-lg text-white truncate">{data.nama_lengkap}</p>
-              <p className="text-sm text-blue-200/70">{data.nip ? `NIP ${data.nip}` : 'NIP belum diisi'}</p>
+              <p className="text-sm text-paper/70">{data.nip ? `NIP ${data.nip}` : 'NIP belum diisi'}</p>
             </div>
           </div>
 
@@ -283,7 +283,7 @@ export default function ProfilSaya() {
         </div>
 
         <div className="card relative overflow-hidden p-6 space-y-4">
-          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-ink-700/60 mb-1 block">Nama Lengkap</label>
