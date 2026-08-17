@@ -6,7 +6,6 @@ import Dokumen from './pages/Dokumen'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './lib/AuthContext'
 import Login from './pages/Login'
-import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Siswa from './pages/Siswa'
 import HasilUjian from './pages/HasilUjian'
@@ -24,6 +23,7 @@ import Rapor from './pages/Rapor'
 import RaporCetak from './pages/RaporCetak'
 import LaporanBulanan from './pages/LaporanBulanan'
 import Keuangan from './pages/Keuangan'
+import Kuitansi from './pages/Kuitansi'
 import Backup from './pages/Backup'
 import ProfilSekolah from './pages/ProfilSekolah'
 import PPDBPublik from './pages/PPDBPublik'
@@ -70,7 +70,6 @@ export default function App() {
       <Route path="/ppdb" element={<PPDBPublik />} />
       <Route path="/ujian-online" element={<UjianOnline />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/daftar" element={<Register />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/siswa" element={<ProtectedRoute><Siswa /></ProtectedRoute>} />
       <Route path="/hasil-ujian" element={<ProtectedRoute><HasilUjian /></ProtectedRoute>} />
@@ -88,6 +87,7 @@ export default function App() {
       <Route path="/laporan" element={<ProtectedRoute adminOnly><LaporanBulanan /></ProtectedRoute>} />
       <Route path="/hari-libur" element={<ProtectedRoute adminOnly><HariLibur /></ProtectedRoute>} />
       <Route path="/keuangan" element={<ProtectedRoute adminOnly><Keuangan /></ProtectedRoute>} />
+      <Route path="/kuitansi" element={<ProtectedRoute adminOnly><Kuitansi /></ProtectedRoute>} />
       <Route path="/backup" element={<ProtectedRoute adminOnly><Backup /></ProtectedRoute>} />
       <Route path="/profil-sekolah" element={<ProtectedRoute adminOnly><ProfilSekolah /></ProtectedRoute>} />
       <Route path="/ppdb-admin" element={<ProtectedRoute adminOnly><PPDBAdmin /></ProtectedRoute>} />
