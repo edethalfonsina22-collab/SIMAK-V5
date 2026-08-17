@@ -11,20 +11,20 @@ function fotoWaliUrl(path) {
   return supabase.storage.from('foto-profil').getPublicUrl(path).data.publicUrl
 }
 
-// Motif sirkuit dekoratif senada dengan Loader & Login — dipakai sebagai
+// Motif dedaunan/ranting dekoratif senada dengan Loader & Login — dipakai sebagai
 // latar tipis di balik grid kartu kelas, bukan menutupi seluruh halaman.
 function CircuitBackdrop() {
   return (
     <svg className="kelas-circuit" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <pattern id="kelasCircuitTile" width="120" height="120" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="#2DD4EE" strokeWidth="1" opacity="0.4">
+          <g fill="none" stroke="#4C9A6A" strokeWidth="1" opacity="0.35">
             <path d="M0 30 H40 V60 H90" />
             <path d="M120 90 H80 V50 H30" />
             <path d="M60 0 V25 H100 V70" />
             <path d="M0 100 H35 V120" />
           </g>
-          <g fill="#2DD4EE">
+          <g fill="#E8B33D">
             <circle cx="40" cy="30" r="2" opacity="0.6" />
             <circle cx="90" cy="60" r="2" opacity="0.6" />
             <circle cx="80" cy="90" r="2" opacity="0.6" />
