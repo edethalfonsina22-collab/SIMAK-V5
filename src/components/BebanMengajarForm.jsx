@@ -452,7 +452,7 @@ export default function BebanMengajarForm({ sekolah }) {
             <button
               type="button"
               onClick={() => exportBebanMengajarToDocx(skTersimpan, sekolah)}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-ink-900 text-paper px-4 py-2 rounded"
             >
               Unduh DOCX
             </button>
