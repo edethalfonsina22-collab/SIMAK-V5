@@ -21,7 +21,7 @@ function isPreviewable(fileName) {
 
 // Motif batik (kawung + parang) — sama persis dengan Profil Saya, Dasbor & Galeri,
 // warna garis menyesuaikan latar (emas di atas navy).
-function BatikOverlay({ patternId, strokeColor = '#d4af37', opacity = 1, size = 72 }) {
+function BatikOverlay({ patternId, strokeColor = '#E8B33D', opacity = 1, size = 72 }) {
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -81,7 +81,7 @@ function PreviewModal({ url, fileName, onClose }) {
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden">
         <div className="relative flex items-center justify-between px-4 py-3 border-b border-slate-200 overflow-hidden">
-          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
           <p className="text-sm font-medium text-slate-900 truncate pr-4">{fileName}</p>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 shrink-0">
             <X size={18} />
@@ -214,10 +214,10 @@ export default function Dokumen() {
       `}</style>
 
       {/* Banner navy — sama seperti Dasbor, Profil Saya & Galeri, dengan corak batik emas */}
-      <div className="relative overflow-hidden rounded-xl p-6 mb-6 flex items-center justify-between gap-4 flex-wrap bg-gradient-to-br from-blue-900 to-blue-950">
+      <div className="relative overflow-hidden rounded-xl p-6 mb-6 flex items-center justify-between gap-4 flex-wrap bg-gradient-to-br from-ink-900 to-ink-950">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute -bottom-14 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
-        <BatikOverlay patternId="batikDokumenBanner" strokeColor="#d4af37" />
+        <BatikOverlay patternId="batikDokumenBanner" strokeColor="#E8B33D" />
 
         <div className="relative flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/10 ring-2 ring-white/20 flex items-center justify-center shrink-0">
@@ -225,7 +225,7 @@ export default function Dokumen() {
           </div>
           <div>
             <p className="font-display font-semibold text-lg text-white">Dokumen Penting</p>
-            <p className="text-sm text-blue-200/70 mt-0.5">Semua berkas resmi sekolah tersimpan rapi di sini.</p>
+            <p className="text-sm text-paper/70 mt-0.5">Semua berkas resmi sekolah tersimpan rapi di sini.</p>
           </div>
         </div>
 
@@ -242,7 +242,7 @@ export default function Dokumen() {
 
       {showForm && (
         <form onSubmit={handleUpload} className="card relative overflow-hidden p-6 mb-6 space-y-3">
-          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+          <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
           <input
             className="input w-full border-slate-200"
             placeholder="Judul dokumen (mis. SK Kepala Sekolah 2026)"
