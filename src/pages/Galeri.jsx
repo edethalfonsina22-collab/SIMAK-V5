@@ -26,7 +26,7 @@ function isVideoPath(path) {
 
 // Motif batik (kawung + parang) — sama persis dengan Profil Saya & Dasbor,
 // warna garis menyesuaikan latar (emas di atas navy).
-function BatikOverlay({ patternId, strokeColor = '#d4af37', opacity = 1, size = 72 }) {
+function BatikOverlay({ patternId, strokeColor = '#E8B33D', opacity = 1, size = 72 }) {
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -208,10 +208,10 @@ export default function Galeri() {
       `}</style>
 
       {/* Banner navy — sama seperti Dasbor & Profil Saya, dengan corak batik emas */}
-      <div className="relative overflow-hidden rounded-xl p-6 mb-6 bg-gradient-to-br from-blue-900 to-blue-950">
+      <div className="relative overflow-hidden rounded-xl p-6 mb-6 bg-gradient-to-br from-ink-900 to-ink-950">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute -bottom-14 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
-        <BatikOverlay patternId="batikGaleriBanner" strokeColor="#d4af37" />
+        <BatikOverlay patternId="batikGaleriBanner" strokeColor="#E8B33D" />
 
         <div className="relative flex items-center justify-between mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ export default function Galeri() {
               <p className="font-display font-semibold text-lg text-white">
                 {kegiatanTerfilter.length} Album Kegiatan
               </p>
-              <p className="text-sm text-blue-200/70">Dokumentasi momen sekolah dari waktu ke waktu.</p>
+              <p className="text-sm text-paper/70">Dokumentasi momen sekolah dari waktu ke waktu.</p>
             </div>
           </div>
           <button
@@ -318,7 +318,7 @@ export default function Galeri() {
                 style={{ animationDelay: `${i * 60}ms` }}
                 className="galeri-fade-in opacity-0 relative overflow-hidden bg-white rounded-2xl text-left shadow-sm hover:shadow-lg transition-all duration-300 ease-out hover:-translate-y-1 border border-ink-900/[0.06]"
               >
-                <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400 z-10" />
+                <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400 z-10" />
                 <div className="aspect-video bg-slate-100 relative">
                   {cover ? (
                     coverIsVideo ? (
@@ -366,7 +366,7 @@ export default function Galeri() {
         <div className="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 z-50" onClick={() => setOpenAlbum(null)}>
           <div className="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="relative p-5 border-b border-slate-200 flex items-start justify-between sticky top-0 bg-white overflow-hidden">
-              <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+              <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
               <div>
                 <p className="font-display font-semibold text-lg text-slate-900">{openAlbum.judul}</p>
                 {openAlbum.deskripsi && <p className="text-sm text-slate-600 mt-1">{openAlbum.deskripsi}</p>}
