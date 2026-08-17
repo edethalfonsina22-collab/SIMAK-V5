@@ -147,6 +147,17 @@ export default function Login() {
             {loading ? <Loader2 size={16} className="animate-spin" /> : <LogIn size={16} />}
             Masuk
           </button>
+
+          <p className="text-center text-xs mt-1" style={{ color: 'var(--code-text)' }}>
+            Belum punya akun?{' '}
+            <a
+              href="/daftar"
+              className="not-italic font-semibold underline"
+              style={{ color: 'var(--text-accent)' }}
+            >
+              Daftar di sini
+            </a>
+          </p>
         </form>
 
         <p
