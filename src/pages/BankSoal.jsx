@@ -1,0 +1,290 @@
+import { useEffect, useState } from 'react'
+import * as XLSX from 'xlsx'
+import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../lib/AuthContext'
+import Layout from '../components/Layout'
+import { Upload, Loader2, Trash2, Database, ChevronDown, ChevronUp } from 'lucide-react'
+
+export default function BankSoal() {
+  const { profil, isAdmin } = useAuth()
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [mapelUpload, setMapelUpload] = useState('')
+  const [mapelFilter, setMapelFilter] = useState('')
+  const [expanded, setExpanded] = useState({})
+  const [deletingMapel, setDeletingMapel] = useState('')
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase.from('bank_soal').select('*').order('mata_pelajaran').order('dibuat_pada', { ascending: false })
+    setItems(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    load()
+  }, [])
+
+  async function handleUpload(file) {
+    if (!mapelUpload) {
+      alert('Isi nama mata pelajaran dulu sebelum upload.')
+      return
+    }
+    setUploading(true)
+    try {
+      const buffer = await file.arrayBuffer()
+      const wb = XLSX.read(buffer, { type: 'array' })
+      const sheet = wb.Sheets[wb.SheetNames[0]]
+      const rows = XLSX.utils.sheet_to_json(sheet)
+
+      const soalRows = []
+      const gagal = [] // { baris, alasan }
+
+      rows.forEach((r, idx) => {
+        const baris = idx + 2 // baris 1 = header, data mulai baris 2 di Excel
+
+        const soal = String(r.soal || r.Soal || '').trim()
+        const pilihan_a = String(r.pilihan_a || r['Pilihan A'] || r.pilihan_A || '').trim()
+        const pilihan_b = String(r.pilihan_b || r['Pilihan B'] || r.pilihan_B || '').trim()
+        const pilihan_c = String(r.pilihan_c || r['Pilihan C'] || r.pilihan_C || '').trim()
+        const pilihan_d = String(r.pilihan_d || r['Pilihan D'] || r.pilihan_D || '').trim()
+        const jawaban_benar = String(r.jawaban_benar || r['Jawaban Benar'] || r.jawaban || '').trim().toUpperCase()
+
+        // Lewati baris yang memang kosong total (bukan error, cuma baris kosong di Excel)
+        const semuaKosong = !soal && !pilihan_a && !pilihan_b && !pilihan_c && !pilihan_d && !jawaban_benar
+        if (semuaKosong) return
+
+        const alasanBaris = []
+        if (!soal) alasanBaris.push('kolom "soal" kosong')
+        if (!pilihan_a) alasanBaris.push('pilihan_a kosong')
+        if (!pilihan_b) alasanBaris.push('pilihan_b kosong')
+        if (!pilihan_c) alasanBaris.push('pilihan_c kosong')
+        if (!pilihan_d) alasanBaris.push('pilihan_d kosong')
+        if (!['A', 'B', 'C', 'D'].includes(jawaban_benar)) {
+          alasanBaris.push(`jawaban_benar harus A/B/C/D (terbaca: "${jawaban_benar || '-'}")`)
+        }
+
+        if (alasanBaris.length > 0) {
+          gagal.push({ baris, alasan: alasanBaris.join(', ') })
+          return
+        }
+
+        soalRows.push({
+          mata_pelajaran: mapelUpload,
+          soal,
+          pilihan_a,
+          pilihan_b,
+          pilihan_c,
+          pilihan_d,
+          jawaban_benar,
+          guru_id: profil.guru_id,
+        })
+      })
+
+      if (soalRows.length === 0) {
+        const detailGagal = gagal.length > 0
+          ? '\n\nDetail baris gagal:\n' + gagal.map((g) => `Baris ${g.baris}: ${g.alasan}`).join('\n')
+          : ''
+        alert(
+          'Tidak ada soal valid ditemukan. Pastikan kolom Excel: soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar (isi A/B/C/D).' +
+          detailGagal
+        )
+        setUploading(false)
+        return
+      }
+
+      const { error } = await supabase.from('bank_soal').insert(soalRows)
+      if (error) {
+        alert('Gagal menyimpan soal: ' + error.message)
+      } else {
+        let pesan = `${soalRows.length} soal berhasil ditambahkan ke Bank Soal ${mapelUpload}.`
+        if (gagal.length > 0) {
+          pesan += `\n\n${gagal.length} baris ditolak dan TIDAK ikut diupload:\n` +
+            gagal.map((g) => `Baris ${g.baris}: ${g.alasan}`).join('\n')
+        }
+        alert(pesan)
+        setMapelUpload('')
+        await load()
+      }
+    } catch (err) {
+      alert('Gagal membaca file Excel: ' + err.message)
+    }
+    setUploading(false)
+  }
+
+  async function handleDelete(item) {
+    if (!confirm('Hapus soal ini dari Bank Soal?')) return
+    const { error } = await supabase.from('bank_soal').delete().eq('id', item.id)
+    if (error) alert('Gagal menghapus: ' + error.message)
+    await load()
+  }
+
+  // Hapus seluruh soal dalam satu folder mata pelajaran sekaligus.
+  // Kalau ada soal milik guru lain yang tidak boleh dihapus user ini (bukan admin),
+  // soal tersebut dilewati dan user diberi tahu jumlahnya sebelum konfirmasi.
+  async function handleDeleteMapel(mapel, soalMapel) {
+    const idsBolehHapus = soalMapel.filter(canDelete).map((item) => item.id)
+
+    if (idsBolehHapus.length === 0) {
+      alert(`Tidak ada soal yang bisa Anda hapus di mata pelajaran "${mapel}".`)
+      return
+    }
+
+    const semuaBisaDihapus = idsBolehHapus.length === soalMapel.length
+    const pesanKonfirmasi = semuaBisaDihapus
+      ? `Hapus seluruh ${idsBolehHapus.length} soal pada mata pelajaran "${mapel}"? Tindakan ini tidak bisa dibatalkan.`
+      : `Anda hanya bisa menghapus ${idsBolehHapus.length} dari ${soalMapel.length} soal di mata pelajaran "${mapel}" (sisanya milik guru lain). Lanjutkan menghapus yang bisa dihapus?`
+
+    if (!confirm(pesanKonfirmasi)) return
+
+    setDeletingMapel(mapel)
+    const { error } = await supabase.from('bank_soal').delete().in('id', idsBolehHapus)
+    setDeletingMapel('')
+
+    if (error) {
+      alert('Gagal menghapus folder mata pelajaran: ' + error.message)
+    }
+    await load()
+  }
+
+  const canDelete = (item) => isAdmin || item.guru_id === profil?.guru_id
+
+  const grouped = items.reduce((acc, item) => {
+    if (!acc[item.mata_pelajaran]) acc[item.mata_pelajaran] = []
+    acc[item.mata_pelajaran].push(item)
+    return acc
+  }, {})
+
+  const mapelList = Object.keys(grouped).sort()
+  const mapelTampil = mapelFilter ? mapelList.filter((m) => m === mapelFilter) : mapelList
+
+  return (
+    <Layout title="Bank Soal" subtitle="Kumpulan soal tersimpan, siap dipakai ulang untuk Ujian Online">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#22315B] p-6 mb-6">
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+            <Database size={20} className="text-paper" />
+          </div>
+          <div>
+            <p className="font-display font-semibold text-lg text-paper">Bank Soal</p>
+            <p className="text-sm text-paper/70 mt-0.5">{items.length} soal tersimpan · {mapelList.length} mata pelajaran</p>
+          </div>
+        </div>
+        <Database size={120} className="absolute -right-4 -bottom-6 text-white/5 rotate-12" />
+      </div>
+
+      <div className="card p-6 mb-6 space-y-3">
+        <h3 className="font-display text-lg font-semibold mb-1">Upload Soal Baru</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="eyebrow mb-1.5 block">Mata Pelajaran</label>
+            <input
+              className="input-field"
+              placeholder="Matematika"
+              value={mapelUpload}
+              onChange={(e) => setMapelUpload(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="eyebrow mb-1.5 block">File Excel</label>
+            <input
+              className="input-field"
+              type="file"
+              accept=".xlsx,.xls"
+              disabled={uploading}
+              onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
+            />
+          </div>
+        </div>
+        {uploading && <p className="text-xs text-ink-700/50 flex items-center gap-1.5"><Loader2 size={12} className="animate-spin" /> Mengunggah...</p>}
+        <p className="text-xs text-ink-700/40">
+          Kolom Excel: <code>soal</code>, <code>pilihan_a</code>, <code>pilihan_b</code>, <code>pilihan_c</code>, <code>pilihan_d</code>, <code>jawaban_benar</code> (isi A/B/C/D). Semua soal dalam 1 file akan masuk ke mata pelajaran yang diisi di atas.
+        </p>
+      </div>
+
+      {mapelList.length > 0 && (
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <button
+            onClick={() => setMapelFilter('')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium ${!mapelFilter ? 'bg-brass-400 text-ink-950' : 'bg-ink-900/[0.06] text-ink-700'}`}
+          >
+            Semua
+          </button>
+          {mapelList.map((m) => (
+            <button
+              key={m}
+              onClick={() => setMapelFilter(m)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium ${mapelFilter === m ? 'bg-brass-400 text-ink-950' : 'bg-ink-900/[0.06] text-ink-700'}`}
+            >
+              {m} ({grouped[m].length})
+            </button>
+          ))}
+        </div>
+      )}
+
+      {loading ? (
+        <p className="text-sm text-ink-700/50">Memuat...</p>
+      ) : items.length === 0 ? (
+        <div className="card p-6">
+          <p className="text-sm text-ink-700/50">Belum ada soal di Bank Soal. Upload lewat form di atas.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {mapelTampil.map((mapel) => {
+            const isOpen = expanded[mapel]
+            const soalMapel = grouped[mapel]
+            const adaYangBolehDihapus = soalMapel.some(canDelete)
+            const sedangHapusFolder = deletingMapel === mapel
+            return (
+              <div key={mapel} className="card overflow-hidden">
+                <div className="w-full flex items-center justify-between p-4 gap-3">
+                  <button
+                    onClick={() => setExpanded({ ...expanded, [mapel]: !isOpen })}
+                    className="flex-1 flex items-center justify-between min-w-0"
+                  >
+                    <p className="text-sm font-medium text-ink-950">{mapel} <span className="text-ink-700/40 font-normal">({soalMapel.length} soal)</span></p>
+                    {isOpen ? <ChevronUp size={16} className="text-ink-700/50 shrink-0" /> : <ChevronDown size={16} className="text-ink-700/50 shrink-0" />}
+                  </button>
+                  {adaYangBolehDihapus && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteMapel(mapel, soalMapel)
+                      }}
+                      disabled={sedangHapusFolder}
+                      title={`Hapus seluruh soal mata pelajaran ${mapel}`}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-50 shrink-0 disabled:opacity-50"
+                    >
+                      {sedangHapusFolder ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                    </button>
+                  )}
+                </div>
+                {isOpen && (
+                  <ul className="divide-y divide-ink-900/[0.06] border-t border-ink-900/[0.06]">
+                    {soalMapel.map((item, i) => (
+                      <li key={item.id} className="p-4 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm text-ink-900">{i + 1}. {item.soal}</p>
+                          <p className="text-xs text-ink-700/40 mt-1">Jawaban benar: {item.jawaban_benar}</p>
+                        </div>
+                        {canDelete(item) && (
+                          <button
+                            onClick={() => handleDelete(item)}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-50 shrink-0"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </Layout>
+  )
+}
