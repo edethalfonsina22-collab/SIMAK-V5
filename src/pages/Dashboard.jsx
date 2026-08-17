@@ -8,11 +8,11 @@ import {
   BarChart, Bar,
 } from 'recharts'
 
-const COLORS = ['#D9A441', '#4C7A6E', '#22315B', '#A87A1F']
+const COLORS = ['#E8B33D', '#4C9A6A', '#2B5936', '#B9860F']
 
 const RPP_STATUS_COLOR = {
-  menunggu: '#D9A441',
-  disetujui: '#4C7A6E',
+  menunggu: '#E8B33D',
+  disetujui: '#4C9A6A',
   ditolak: '#B4453A',
 }
 const RPP_STATUS_LABEL = { menunggu: 'Menunggu', disetujui: 'Disetujui', ditolak: 'Ditolak' }
@@ -37,7 +37,7 @@ const CARD_THEME = {
 // Motif batik (kawung + parang) yang dipakai konsisten di seluruh tema —
 // motif sama persis dengan kartu identitas di halaman Profil Saya, hanya
 // warna garis yang menyesuaikan latar (emas di atas navy, putih di atas kartu warna-warni).
-function BatikOverlay({ patternId, strokeColor = '#d4af37', opacity = 1, size = 72 }) {
+function BatikOverlay({ patternId, strokeColor = '#E8B33D', opacity = 1, size = 72 }) {
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -233,16 +233,16 @@ export default function Dashboard() {
 
       <div className="relative">
         {/* Banner navy — corak batik emas yang sama persis dengan kartu identitas di Profil Saya */}
-        <div className="dash-fade-in opacity-0 relative overflow-hidden rounded-xl p-6 mb-6 flex items-center gap-4 bg-gradient-to-br from-blue-900 to-blue-950">
+        <div className="dash-fade-in opacity-0 relative overflow-hidden rounded-xl p-6 mb-6 flex items-center gap-4 bg-gradient-to-br from-ink-900 to-ink-950">
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
           <div className="absolute -bottom-14 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
-          <BatikOverlay patternId="batikBanner" strokeColor="#d4af37" />
+          <BatikOverlay patternId="batikBanner" strokeColor="#E8B33D" />
           <div className="relative w-12 h-12 rounded-full bg-white/10 ring-2 ring-white/20 text-white flex items-center justify-center shrink-0">
             <LayoutDashboard size={22} />
           </div>
           <div className="relative">
             <p className="font-display font-semibold text-lg text-white">Selamat datang kembali di SIMAK</p>
-            <p className="text-sm text-blue-200/70">Semua ringkasan data sekolah ada di bawah ini.</p>
+            <p className="text-sm text-paper/70">Semua ringkasan data sekolah ada di bawah ini.</p>
           </div>
         </div>
 
@@ -339,7 +339,7 @@ export default function Dashboard() {
                   <XAxis dataKey="tanggal" tick={{ fontSize: 11 }} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" width={40} />
                   <Tooltip formatter={(v) => [`${v}%`, 'Kehadiran']} />
-                  <Line type="monotone" dataKey="persen" stroke="#4C7A6E" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="persen" stroke="#4C9A6A" strokeWidth={2} dot={{ r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -384,7 +384,7 @@ export default function Dashboard() {
                   <XAxis dataKey="mapel" tick={{ fontSize: 11 }} interval={0} angle={-15} textAnchor="end" height={50} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} width={30} />
                   <Tooltip />
-                  <Bar dataKey="rata" fill="#D9A441" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="rata" fill="#E8B33D" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
