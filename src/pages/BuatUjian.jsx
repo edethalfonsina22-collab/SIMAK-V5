@@ -250,15 +250,15 @@ export default function BuatUjian() {
     const namaKelasDibuat = daftarKelas.find((k) => k.id === ujianDibuat.kelas_id)?.nama_kelas;
     return (
       <Layout title="Buat Ujian" subtitle="Ujian baru berhasil dibuat">
-        <div className="w-full max-w-xl p-6 rounded-xl border border-[#6b0f1a]/15 bg-white shadow-sm">
-          <h3 className="text-lg font-semibold text-[#3b0a0a] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#d4a017]"></span>
+        <div className="w-full max-w-xl p-6 rounded-xl border border-[#1E4429]/15 bg-white shadow-sm">
+          <h3 className="text-lg font-semibold text-[#0F2318] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#E8B33D]"></span>
             Ujian berhasil dibuat 🎉
           </h3>
           <p className="mt-2 text-sm text-gray-700">
             Bagikan Kode Ujian ini ke siswa kelas <strong>{namaKelasDibuat}</strong>:
           </p>
-          <div className="mt-3 text-3xl font-mono font-bold tracking-widest text-[#6b0f1a] text-center bg-[#f7e6e3] rounded-lg py-3">
+          <div className="mt-3 text-3xl font-mono font-bold tracking-widest text-[#1E4429] text-center bg-[#EAF3EA] rounded-lg py-3">
             {ujianDibuat.kode_ujian}
           </div>
 
@@ -268,11 +268,11 @@ export default function BuatUjian() {
               readOnly
               value={buatLinkUjian(ujianDibuat.kode_ujian)}
               onFocus={(e) => e.target.select()}
-              className="flex-1 rounded-lg px-3 py-2 border border-[#6b0f1a]/15 bg-[#f7e6e3]/40 text-sm text-[#3b0a0a] font-mono truncate"
+              className="flex-1 rounded-lg px-3 py-2 border border-[#1E4429]/15 bg-[#EAF3EA]/40 text-sm text-[#0F2318] font-mono truncate"
             />
             <button
               onClick={copyLinkUjian}
-              className="px-4 py-2 rounded-lg bg-[#d4a017] text-[#3b0a0a] font-medium hover:bg-[#c4930f] transition-colors whitespace-nowrap"
+              className="px-4 py-2 rounded-lg bg-[#E8B33D] text-[#0F2318] font-medium hover:bg-[#B9860F] transition-colors whitespace-nowrap"
             >
               {tersalin ? 'Tersalin! ✓' : 'Copy Link'}
             </button>
@@ -285,7 +285,7 @@ export default function BuatUjian() {
           {ujianDibuat.status !== 'aktif' && (
             <button
               onClick={aktifkanUjian}
-              className="mt-4 px-4 py-2 rounded-lg bg-[#6b0f1a] text-white font-medium hover:bg-[#7d1420] transition-colors"
+              className="mt-4 px-4 py-2 rounded-lg bg-[#1E4429] text-white font-medium hover:bg-[#2B5936] transition-colors"
             >
               Aktifkan Ujian
             </button>
@@ -297,38 +297,38 @@ export default function BuatUjian() {
 
   return (
     <Layout title="Buat Ujian" subtitle="Buat ujian online baru dari Excel atau Bank Soal">
-      <div className="w-full max-w-xl space-y-4 bg-white rounded-xl border border-[#6b0f1a]/15 shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-[#3b0a0a] flex items-center gap-2">
-          <span className="w-1.5 h-5 rounded-full bg-[#d4a017]"></span>
+      <div className="w-full max-w-xl space-y-4 bg-white rounded-xl border border-[#1E4429]/15 shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-[#0F2318] flex items-center gap-2">
+          <span className="w-1.5 h-5 rounded-full bg-[#E8B33D]"></span>
           Buat Ujian Baru
         </h3>
 
         <div>
-          <label className="block text-sm font-medium mb-1 text-[#6b0f1a]">Judul Ujian</label>
+          <label className="block text-sm font-medium mb-1 text-[#1E4429]">Judul Ujian</label>
           <input
             value={judul}
             onChange={(e) => setJudul(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+            className="w-full rounded-lg px-3 py-2 border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
             placeholder="Ulangan Harian Bab 3"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1 text-[#6b0f1a]">Mata Pelajaran</label>
+          <label className="block text-sm font-medium mb-1 text-[#1E4429]">Mata Pelajaran</label>
           <input
             value={mapel}
             onChange={(e) => setMapel(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+            className="w-full rounded-lg px-3 py-2 border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
             placeholder="Matematika"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1 text-[#6b0f1a]">Kelas</label>
+          <label className="block text-sm font-medium mb-1 text-[#1E4429]">Kelas</label>
           <select
             value={kelasId}
             onChange={(e) => setKelasId(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+            className="w-full rounded-lg px-3 py-2 border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
           >
             {daftarKelas.length === 0 && <option value="">Belum ada data kelas</option>}
             {daftarKelas.map((k) => (
@@ -340,7 +340,7 @@ export default function BuatUjian() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-[#6b0f1a]">Sumber Soal</label>
+          <label className="block text-sm font-medium mb-2 text-[#1E4429]">Sumber Soal</label>
           <div className="flex gap-2">
             <button
               type="button"
@@ -351,8 +351,8 @@ export default function BuatUjian() {
               }}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                 sumberSoal === 'excel'
-                  ? 'bg-[#6b0f1a] text-white'
-                  : 'bg-[#6b0f1a]/5 text-[#6b0f1a] hover:bg-[#6b0f1a]/10'
+                  ? 'bg-[#1E4429] text-white'
+                  : 'bg-[#1E4429]/5 text-[#1E4429] hover:bg-[#1E4429]/10'
               }`}
             >
               Upload Excel
@@ -366,8 +366,8 @@ export default function BuatUjian() {
               }}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                 sumberSoal === 'bank'
-                  ? 'bg-[#6b0f1a] text-white'
-                  : 'bg-[#6b0f1a]/5 text-[#6b0f1a] hover:bg-[#6b0f1a]/10'
+                  ? 'bg-[#1E4429] text-white'
+                  : 'bg-[#1E4429]/5 text-[#1E4429] hover:bg-[#1E4429]/10'
               }`}
             >
               Pilih dari Bank Soal
@@ -377,14 +377,14 @@ export default function BuatUjian() {
 
         {sumberSoal === 'excel' && (
           <div>
-            <label className="block text-sm font-medium mb-1 text-[#6b0f1a]">
+            <label className="block text-sm font-medium mb-1 text-[#1E4429]">
               Upload Soal (Excel — kolom: soal, pilihan_a, pilihan_b, pilihan_c, pilihan_d, jawaban_benar)
             </label>
             <input
               type="file"
               accept=".xlsx,.xls"
               onChange={bacaFileExcel}
-              className="w-full text-sm text-[#6b0f1a]/80 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#6b0f1a] file:text-white file:font-medium hover:file:bg-[#7d1420] file:cursor-pointer file:transition-colors"
+              className="w-full text-sm text-[#1E4429]/80 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#1E4429] file:text-white file:font-medium hover:file:bg-[#2B5936] file:cursor-pointer file:transition-colors"
             />
           </div>
         )}
@@ -392,9 +392,9 @@ export default function BuatUjian() {
         {sumberSoal === 'bank' && (
           <div className="space-y-3">
             {bankLoading ? (
-              <p className="text-sm text-[#6b0f1a]/60">Memuat Bank Soal...</p>
+              <p className="text-sm text-[#1E4429]/60">Memuat Bank Soal...</p>
             ) : bankSoalList.length === 0 ? (
-              <p className="text-sm text-[#6b0f1a]/60">
+              <p className="text-sm text-[#1E4429]/60">
                 Belum ada soal di Bank Soal. Upload dulu lewat menu Bank Soal.
               </p>
             ) : (
@@ -403,7 +403,7 @@ export default function BuatUjian() {
                   <select
                     value={mapelBankFilter}
                     onChange={(e) => setMapelBankFilter(e.target.value)}
-                    className="rounded-lg px-3 py-1.5 border border-[#6b0f1a]/15 text-sm text-[#3b0a0a] outline-none"
+                    className="rounded-lg px-3 py-1.5 border border-[#1E4429]/15 text-sm text-[#0F2318] outline-none"
                   >
                     <option value="">Semua Mata Pelajaran</option>
                     {daftarMapelBank.map((m) => (
@@ -415,17 +415,17 @@ export default function BuatUjian() {
                   <button
                     type="button"
                     onClick={pilihSemuaSoalBank}
-                    className="text-xs font-medium text-[#6b0f1a] underline"
+                    className="text-xs font-medium text-[#1E4429] underline"
                   >
                     Pilih/Batal semua ({bankSoalTampil.length} soal)
                   </button>
                 </div>
 
-                <div className="max-h-72 overflow-y-auto border border-[#6b0f1a]/15 rounded-lg divide-y divide-[#6b0f1a]/10">
+                <div className="max-h-72 overflow-y-auto border border-[#1E4429]/15 rounded-lg divide-y divide-[#1E4429]/10">
                   {bankSoalTampil.map((s, i) => (
                     <label
                       key={s.id}
-                      className="flex items-start gap-2 p-3 text-sm cursor-pointer hover:bg-[#f7e6e3]/40"
+                      className="flex items-start gap-2 p-3 text-sm cursor-pointer hover:bg-[#EAF3EA]/40"
                     >
                       <input
                         type="checkbox"
@@ -433,9 +433,9 @@ export default function BuatUjian() {
                         onChange={() => toggleSoalBank(s.id)}
                         className="mt-1"
                       />
-                      <span className="text-[#3b0a0a]">
+                      <span className="text-[#0F2318]">
                         {i + 1}. {s.soal}{' '}
-                        <span className="text-[#6b0f1a]/50">({s.mata_pelajaran})</span>
+                        <span className="text-[#1E4429]/50">({s.mata_pelajaran})</span>
                       </span>
                     </label>
                   ))}
@@ -444,7 +444,7 @@ export default function BuatUjian() {
                 <button
                   type="button"
                   onClick={gunakanSoalTerpilih}
-                  className="w-full py-2 rounded-lg bg-[#d4a017] text-[#3b0a0a] font-medium hover:bg-[#c4930f] transition-colors"
+                  className="w-full py-2 rounded-lg bg-[#E8B33D] text-[#0F2318] font-medium hover:bg-[#B9860F] transition-colors"
                 >
                   Gunakan {idTerpilih.size} Soal Terpilih
                 </button>
@@ -454,13 +454,13 @@ export default function BuatUjian() {
         )}
 
         {pesanError && (
-          <div className="text-sm text-[#8f1f22] bg-[#6b0f1a]/5 border border-[#6b0f1a]/20 rounded-lg p-3">
+          <div className="text-sm text-[#B91C1C] bg-[#1E4429]/5 border border-[#1E4429]/20 rounded-lg p-3">
             {pesanError}
           </div>
         )}
 
         {soalPreview.length > 0 && (
-          <div className="text-sm text-[#3b0a0a] bg-[#d4a017]/10 border border-[#d4a017]/30 rounded-lg p-3">
+          <div className="text-sm text-[#0F2318] bg-[#E8B33D]/10 border border-[#E8B33D]/30 rounded-lg p-3">
             ✅ {soalPreview.length} soal siap dipakai ({sumberSoal === 'bank' ? 'dari Bank Soal' : 'dari Excel'}).
             Contoh soal #1: <em>{soalPreview[0].soal}</em>
           </div>
@@ -469,7 +469,7 @@ export default function BuatUjian() {
         <button
           onClick={simpanUjian}
           disabled={status === 'menyimpan'}
-          className="px-4 py-2 rounded-lg bg-[#6b0f1a] text-white font-medium hover:bg-[#7d1420] transition-colors disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-[#1E4429] text-white font-medium hover:bg-[#2B5936] transition-colors disabled:opacity-50"
         >
           {status === 'menyimpan' ? 'Menyimpan...' : 'Simpan Ujian'}
         </button>
