@@ -24,7 +24,7 @@ export default function TemplateCard({
 
         <div className="flex gap-2 mt-3">
 
-          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">
+          <span className="bg-sage-500/15 text-sage-500 px-2 py-1 rounded text-xs">
             Kelas {template.kelas}
           </span>
 
@@ -46,7 +46,7 @@ export default function TemplateCard({
 
           <button
             onClick={onPreview}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition"
+            className="flex-1 bg-ink-900 hover:bg-ink-800 text-paper py-2 rounded-lg transition"
           >
             👁 Preview
           </button>
