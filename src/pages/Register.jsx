@@ -59,8 +59,13 @@ export default function Register() {
 
   return (
     <div className="login-shell min-h-screen flex items-center justify-center px-4 py-10 relative overflow-hidden">
-      <div className="login-grid" aria-hidden />
-      <div className="login-code" aria-hidden />
+      <div className="login-sun" aria-hidden />
+      <div className="login-mountains" aria-hidden>
+        <svg viewBox="0 0 800 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path className="login-mountain-back" d="M0 220 L0 140 L120 70 L230 150 L330 90 L460 160 L560 60 L680 140 L800 100 L800 220 Z" />
+          <path className="login-mountain-front" d="M0 220 L0 170 L90 120 L200 180 L300 130 L420 190 L540 110 L650 175 L800 150 L800 220 Z" />
+        </svg>
+      </div>
 
       <div className="w-full max-w-sm relative z-10">
         <div
@@ -195,61 +200,55 @@ export default function Register() {
           style ini tetap dibutuhkan supaya tampilan konsisten. */}
       <style>{`
         .login-shell {
-          --bg-1: #050b09;
-          --bg-2: #0b201c;
-          --accent: #5eead4;
-          --accent-strong: #9dfff0;
-          --ring: rgba(94, 234, 212, 0.28);
-          --ring-soft: rgba(94, 234, 212, 0.12);
-          --text-primary: #eafffa;
-          --text-accent: #5eead4;
-          --code-text: rgba(140, 214, 198, 0.32);
-          background:
-            radial-gradient(circle at 30% 25%, rgba(94, 234, 212, 0.10), transparent 55%),
-            linear-gradient(160deg, var(--bg-1), var(--bg-2) 60%, var(--bg-1));
+          --sky-1: #cdeaf6;
+          --sky-2: #eaf6e3;
+          --accent: #2f8f56;
+          --accent-strong: #6cc98a;
+          --sun: #f3b93c;
+          --ring: rgba(47, 143, 86, 0.25);
+          --ring-soft: rgba(47, 143, 86, 0.12);
+          --text-primary: #163a22;
+          --text-muted: #4f6b57;
+          --text-accent: #2f8f56;
+          background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, #dcefd9 100%);
         }
-        .login-grid {
-          position: absolute; inset: 0;
-          background-image:
-            linear-gradient(var(--ring-soft) 1px, transparent 1px),
-            linear-gradient(90deg, var(--ring-soft) 1px, transparent 1px);
-          background-size: 36px 36px; opacity: 0.35;
-          mask-image: radial-gradient(circle at 50% 35%, black 0%, transparent 70%);
+        .login-sun {
+          position: absolute; top: -60px; right: 8%; width: 220px; height: 220px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(243, 185, 60, 0.55), transparent 70%);
+          filter: blur(2px); pointer-events: none;
         }
-        .login-code {
-          position: absolute; top: 0; right: 0; width: 22%; height: 100%; pointer-events: none;
-          background-image: repeating-linear-gradient(var(--code-text) 0px, var(--code-text) 1px, transparent 1px, transparent 16px);
-          opacity: 0.35;
-          -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-          mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-        }
-        .login-badge-glow { background: var(--accent); filter: blur(10px); opacity: 0.4; animation: glow-pulse 2.8s ease-in-out infinite; }
-        .login-badge { background: linear-gradient(160deg, var(--accent-strong), var(--accent)); color: #06201c; box-shadow: 0 0 18px rgba(94, 234, 212, 0.45); }
-        .login-title { color: var(--text-primary); text-shadow: 0 0 14px rgba(94, 234, 212, 0.35); }
-        .login-tagline { color: var(--code-text); }
+        .login-mountains { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; pointer-events: none; }
+        .login-mountains svg { width: 100%; height: 100%; display: block; }
+        .login-mountain-back { fill: #9fcdae; opacity: 0.7; }
+        .login-mountain-front { fill: #6fae7f; opacity: 0.85; }
+        .login-badge-glow { background: var(--sun); filter: blur(10px); opacity: 0.45; animation: glow-pulse 2.8s ease-in-out infinite; }
+        .login-badge { background: linear-gradient(160deg, var(--accent-strong), var(--accent)); color: #ffffff; box-shadow: 0 4px 16px rgba(47, 143, 86, 0.35); }
+        .login-title { color: var(--text-primary); }
+        .login-tagline { color: var(--text-muted); }
         .login-card {
           position: relative; border-radius: 16px;
-          background: linear-gradient(160deg, rgba(11, 32, 28, 0.85), rgba(5, 11, 9, 0.9));
-          border: 1px solid var(--ring-soft);
-          box-shadow: 0 0 40px rgba(94, 234, 212, 0.06), 0 20px 40px rgba(0, 0, 0, 0.35);
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(6px);
+          border: 1px solid rgba(47, 143, 86, 0.18);
+          box-shadow: 0 20px 40px -12px rgba(22, 58, 34, 0.18);
         }
-        .login-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--code-text); }
+        .login-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
         .login-field {
-          background: rgba(94, 234, 212, 0.05); border: 1px solid var(--ring-soft); border-radius: 10px;
+          background: rgba(255, 255, 255, 0.9); border: 1px solid var(--ring-soft); border-radius: 10px;
           padding: 10px 12px; color: var(--text-primary); outline: none;
         }
-        .login-field::placeholder { color: rgba(234, 255, 250, 0.35); }
-        .login-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.18); }
-        .login-error { color: #ff9d9d; }
+        .login-field::placeholder { color: rgba(22, 58, 34, 0.35); }
+        .login-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47, 143, 86, 0.16); }
+        .login-error { color: #c0392b; }
         .login-btn {
           display: flex; align-items: center; justify-content: center; gap: 8px;
-          padding: 11px 16px; border-radius: 10px; font-weight: 600; color: #06201c;
+          padding: 11px 16px; border-radius: 10px; font-weight: 600; color: #ffffff;
           background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-          box-shadow: 0 0 20px rgba(94, 234, 212, 0.35); border: none; cursor: pointer;
+          box-shadow: 0 8px 20px -4px rgba(47, 143, 86, 0.45); border: none; cursor: pointer;
         }
         .login-btn:disabled { opacity: 0.7; cursor: default; }
-        .login-credit { color: var(--code-text); }
-        .login-credit a { color: var(--text-accent); text-shadow: 0 0 8px rgba(94, 234, 212, 0.4); }
+        .login-credit { color: var(--text-muted); }
+        .login-credit a { color: var(--text-accent); }
         @keyframes glow-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
         @media (prefers-reduced-motion: reduce) {
           * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
