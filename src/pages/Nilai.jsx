@@ -28,19 +28,19 @@ const WARNA_PREDIKAT = {
   D: 'bg-red-500/15 text-red-600',
 }
 
-// Motif sirkuit dekoratif senada dengan Loader, Login & Kelas.
+// Motif dedaunan/ranting dekoratif senada dengan Loader, Login & Kelas.
 function CircuitBackdrop({ patternId }) {
   return (
     <svg className="absolute inset-0 w-full h-full opacity-40 pointer-events-none" aria-hidden="true">
       <defs>
         <pattern id={patternId} width="120" height="120" patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="#2DD4EE" strokeWidth="1" opacity="0.5">
+          <g fill="none" stroke="#4C9A6A" strokeWidth="1" opacity="0.35">
             <path d="M0 30 H40 V60 H90" />
             <path d="M120 90 H80 V50 H30" />
             <path d="M60 0 V25 H100 V70" />
             <path d="M0 100 H35 V120" />
           </g>
-          <g fill="#2DD4EE">
+          <g fill="#E8B33D">
             <circle cx="40" cy="30" r="2" opacity="0.6" />
             <circle cx="90" cy="60" r="2" opacity="0.6" />
             <circle cx="80" cy="90" r="2" opacity="0.6" />
