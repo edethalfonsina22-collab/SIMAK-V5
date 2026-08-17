@@ -191,7 +191,7 @@ export default function KartuSiswa() {
 
   return (
     <Layout title="Cetak Kartu" subtitle="Kartu Pelajar & Kartu Perpustakaan otomatis dari data siswa">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4a0e0e] to-[#7a1515] p-6 mb-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#16341F] to-[#1E4429] p-6 mb-6">
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
             <IdCard size={20} className="text-paper" />
