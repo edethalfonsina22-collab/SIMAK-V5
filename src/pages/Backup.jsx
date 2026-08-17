@@ -127,7 +127,7 @@ export default function Backup() {
 
         <div className="card p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-11 h-11 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600">
+            <div className="w-11 h-11 rounded-lg bg-sage-500/10 flex items-center justify-center text-sage-500">
               <ShieldCheck size={20} />
             </div>
             <h3 className="font-display font-semibold text-ink-950">Backup Otomatis Supabase</h3>
