@@ -98,7 +98,7 @@ export default function Rapat() {
           </h1>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center gap-2 px-4 py-2 bg-ink-900 text-paper rounded-lg hover:bg-ink-800"
           >
             <Plus size={18} /> Mulai Rapat Baru
           </button>
@@ -167,7 +167,7 @@ export default function Rapat() {
                 <button
                   onClick={buatRapatBaru}
                   disabled={membuat || !judulBaru.trim()}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-ink-900 text-paper hover:bg-ink-800 disabled:opacity-50"
                 >
                   {membuat ? 'Membuat...' : 'Mulai Rapat'}
                 </button>
