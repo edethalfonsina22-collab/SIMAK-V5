@@ -16,7 +16,7 @@ const BUCKET_BUKTI = 'bukti-presensi'
 
 // Motif batik (kawung + parang) — sama persis dengan Profil Saya, Dasbor, Galeri, Dokumen & Data Siswa,
 // warna garis menyesuaikan latar (emas di atas navy).
-function BatikOverlay({ patternId, strokeColor = '#d4af37', opacity = 1, size = 72 }) {
+function BatikOverlay({ patternId, strokeColor = '#E8B33D', opacity = 1, size = 72 }) {
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -182,10 +182,10 @@ function CameraFotoGuru({ guru, tanggal, onSaved, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/70 backdrop-blur-sm p-4">
       <div className="card relative overflow-hidden w-full max-w-md p-5">
-        <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+        <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-full bg-blue-900/10 text-blue-900 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-full bg-ink-900/10 text-ink-900 flex items-center justify-center shrink-0">
               <Camera size={17} />
             </div>
             <div className="min-w-0">
@@ -440,10 +440,10 @@ export default function Presensi() {
   return (
     <Layout title="Presensi" subtitle="Catat kehadiran siswa dan guru harian">
       {/* Banner navy — sama seperti Dasbor, Profil Saya, Galeri, Dokumen & Data Siswa, dengan corak batik emas */}
-      <div className="relative overflow-hidden rounded-xl p-6 mb-6 bg-gradient-to-br from-blue-900 to-blue-950">
+      <div className="relative overflow-hidden rounded-xl p-6 mb-6 bg-gradient-to-br from-ink-900 to-ink-950">
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
         <div className="absolute -bottom-14 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
-        <BatikOverlay patternId="batikPresensiBanner" strokeColor="#d4af37" />
+        <BatikOverlay patternId="batikPresensiBanner" strokeColor="#E8B33D" />
 
         <div className="relative flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/10 ring-2 ring-white/20 flex items-center justify-center shrink-0">
@@ -451,7 +451,7 @@ export default function Presensi() {
           </div>
           <div>
             <p className="font-display font-semibold text-lg text-white">Presensi</p>
-            <p className="text-sm text-blue-200/70 mt-0.5">
+            <p className="text-sm text-paper/70 mt-0.5">
               {tab === 'siswa' && kelasAktif ? `Kelas ${kelasAktif.nama_kelas} · ` : tab === 'guru' ? 'Presensi guru · ' : ''}
               {tanggalLabel}
             </p>
@@ -488,7 +488,7 @@ export default function Presensi() {
       </div>
 
       <div className="card relative overflow-hidden overflow-x-auto">
-        <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-900 to-brass-400" />
+        <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-ink-800 to-brass-400" />
         <table className="table-shell">
           <thead>
             <tr>
@@ -545,7 +545,7 @@ export default function Presensi() {
                         <img
                           src={fotoBuktiUrl(buktiMap[item.id].foto_bukti_path)}
                           alt="Bukti presensi"
-                          className="w-9 h-9 rounded-lg object-cover ring-1 ring-ink-900/10 group-hover:ring-blue-900/40"
+                          className="w-9 h-9 rounded-lg object-cover ring-1 ring-ink-900/10 group-hover:ring-brass-400/50"
                         />
                         <span className="text-xs text-ink-700/50">{jamLabel(buktiMap[item.id].jam_absen) || '—'}</span>
                       </button>
@@ -553,7 +553,7 @@ export default function Presensi() {
                       <button
                         type="button"
                         onClick={() => setCameraForGuru(item)}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-900/10 text-blue-900 text-xs font-medium hover:bg-blue-900/15"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-ink-900/10 text-ink-900 text-xs font-medium hover:bg-ink-900/15"
                       >
                         <Camera size={13} /> Ambil Foto
                       </button>
