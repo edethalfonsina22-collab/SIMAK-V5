@@ -739,7 +739,7 @@ export default function Rapor() {
 
   return (
     <Layout title="Rapor Siswa" subtitle="Kelola nilai, deskripsi capaian, P5, ekstrakurikuler & catatan wali kelas">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4a0e0e] to-[#7a1515] p-6 mb-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#16341F] to-[#1E4429] p-6 mb-6">
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
             <FileBadge size={20} className="text-paper" />
@@ -858,7 +858,7 @@ export default function Rapor() {
                   onClick={() => setActiveTab(tab.key)}
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
                     activeTab === tab.key
-                      ? 'text-[#7a1515] border-b-2 border-[#7a1515]'
+                      ? 'text-[#1E4429] border-b-2 border-[#1E4429]'
                       : 'text-ink-700/60 hover:text-ink-950'
                   }`}
                 >
