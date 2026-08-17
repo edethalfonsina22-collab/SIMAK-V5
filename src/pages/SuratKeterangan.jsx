@@ -37,7 +37,7 @@ export default function SuratKeterangan() {
       actions={
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-ink-900 text-paper px-4 py-2 rounded"
         >
           {showForm ? "Tutup Form" : "+ Buat Surat Baru"}
         </button>
