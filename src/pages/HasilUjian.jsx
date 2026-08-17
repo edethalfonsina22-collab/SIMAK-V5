@@ -115,7 +115,7 @@ export default function HasilUjian() {
   if (memuat) {
     return (
       <Layout title="Hasil Ujian" subtitle="Lihat hasil pengerjaan siswa">
-        <div className="text-[#6b0f1a]/60 text-sm">Memuat...</div>
+        <div className="text-[#1E4429]/60 text-sm">Memuat...</div>
       </Layout>
     );
   }
@@ -123,12 +123,12 @@ export default function HasilUjian() {
   if (daftarUjian.length === 0) {
     return (
       <Layout title="Hasil Ujian" subtitle="Lihat hasil pengerjaan siswa">
-        <div className="w-full max-w-3xl bg-white rounded-xl border border-[#6b0f1a]/15 shadow-sm p-6">
-          <h3 className="text-lg font-semibold mb-2 text-[#3b0a0a] flex items-center gap-2">
-            <span className="w-1.5 h-5 rounded-full bg-[#d4a017]"></span>
+        <div className="w-full max-w-3xl bg-white rounded-xl border border-[#1E4429]/15 shadow-sm p-6">
+          <h3 className="text-lg font-semibold mb-2 text-[#0F2318] flex items-center gap-2">
+            <span className="w-1.5 h-5 rounded-full bg-[#E8B33D]"></span>
             Hasil Ujian
           </h3>
-          <p className="text-sm text-[#6b0f1a]/60">
+          <p className="text-sm text-[#1E4429]/60">
             Anda belum membuat ujian apa pun. Buat ujian dulu di menu "Buat Ujian".
           </p>
         </div>
@@ -138,16 +138,16 @@ export default function HasilUjian() {
 
   return (
     <Layout title="Hasil Ujian" subtitle="Lihat hasil pengerjaan siswa">
-      <div className="w-full max-w-5xl space-y-5 bg-white rounded-xl border border-[#6b0f1a]/15 shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-[#3b0a0a] flex items-center gap-2">
-          <span className="w-1.5 h-5 rounded-full bg-[#d4a017]"></span>
+      <div className="w-full max-w-5xl space-y-5 bg-white rounded-xl border border-[#1E4429]/15 shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-[#0F2318] flex items-center gap-2">
+          <span className="w-1.5 h-5 rounded-full bg-[#E8B33D]"></span>
           Hasil Ujian
         </h3>
 
         <select
           value={ujianDipilih}
           onChange={(e) => setUjianDipilih(e.target.value)}
-          className="w-full rounded-lg px-3 py-2 border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors"
+          className="w-full rounded-lg px-3 py-2 border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors"
         >
           {daftarUjian.map((u) => (
             <option key={u.id} value={u.id}>
@@ -159,23 +159,23 @@ export default function HasilUjian() {
 
         {ujianAktif && (
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-xl p-4 text-center border border-[#6b0f1a]/15 bg-[#f7e6e3]/40">
-              <div className="text-2xl font-bold text-[#6b0f1a]">{hasil.length}</div>
-              <div className="text-xs text-[#6b0f1a]/60">Siswa mengerjakan</div>
+            <div className="rounded-xl p-4 text-center border border-[#1E4429]/15 bg-[#EAF3EA]/40">
+              <div className="text-2xl font-bold text-[#1E4429]">{hasil.length}</div>
+              <div className="text-xs text-[#1E4429]/60">Siswa mengerjakan</div>
             </div>
-            <div className="rounded-xl p-4 text-center border border-[#6b0f1a]/15 bg-[#f7e6e3]/40">
-              <div className="text-2xl font-bold text-[#6b0f1a]">{jumlahSoal}</div>
-              <div className="text-xs text-[#6b0f1a]/60">Jumlah soal</div>
+            <div className="rounded-xl p-4 text-center border border-[#1E4429]/15 bg-[#EAF3EA]/40">
+              <div className="text-2xl font-bold text-[#1E4429]">{jumlahSoal}</div>
+              <div className="text-xs text-[#1E4429]/60">Jumlah soal</div>
             </div>
-            <div className="rounded-xl p-4 text-center border border-[#d4a017]/40 bg-[#d4a017]/10">
-              <div className="text-2xl font-bold text-[#8a6a0d]">{rataRata}</div>
-              <div className="text-xs text-[#6b0f1a]/60">Rata-rata skor</div>
+            <div className="rounded-xl p-4 text-center border border-[#E8B33D]/40 bg-[#E8B33D]/10">
+              <div className="text-2xl font-bold text-[#B9860F]">{rataRata}</div>
+              <div className="text-xs text-[#1E4429]/60">Rata-rata skor</div>
             </div>
           </div>
         )}
 
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <p className="text-sm text-[#6b0f1a]/60">
+          <p className="text-sm text-[#1E4429]/60">
             {ujianAktif?.status === 'aktif'
               ? '🟢 Ujian aktif — hasil masuk otomatis secara real-time'
               : 'Ujian tidak aktif'}
@@ -184,43 +184,43 @@ export default function HasilUjian() {
             <button
               onClick={() => setTampilkanPerSoal(!tampilkanPerSoal)}
               disabled={hasil.length === 0 || soalDetail.length === 0}
-              className="text-sm px-3 py-1.5 rounded-lg border border-[#6b0f1a]/20 text-[#6b0f1a] hover:bg-[#6b0f1a]/5 transition-colors disabled:opacity-40"
+              className="text-sm px-3 py-1.5 rounded-lg border border-[#1E4429]/20 text-[#1E4429] hover:bg-[#1E4429]/5 transition-colors disabled:opacity-40"
             >
               {tampilkanPerSoal ? 'Sembunyikan Analisis Per Soal' : 'Lihat Analisis Per Soal'}
             </button>
             <button
               onClick={unduhCSV}
               disabled={hasil.length === 0}
-              className="text-sm px-3 py-1.5 rounded-lg border border-[#6b0f1a]/20 text-[#6b0f1a] hover:bg-[#6b0f1a]/5 transition-colors disabled:opacity-40"
+              className="text-sm px-3 py-1.5 rounded-lg border border-[#1E4429]/20 text-[#1E4429] hover:bg-[#1E4429]/5 transition-colors disabled:opacity-40"
             >
               Unduh CSV
             </button>
           </div>
         </div>
 
-        <table className="w-full text-sm rounded-xl overflow-hidden border border-[#6b0f1a]/10">
+        <table className="w-full text-sm rounded-xl overflow-hidden border border-[#1E4429]/10">
           <thead>
-            <tr className="bg-[#6b0f1a] text-white">
+            <tr className="bg-[#1E4429] text-white">
               <th className="text-left px-4 py-2.5 font-medium">#</th>
               <th className="text-left px-4 py-2.5 font-medium">Nama Siswa</th>
               <th className="text-left px-4 py-2.5 font-medium">Skor</th>
               <th className="text-left px-4 py-2.5 font-medium">Waktu Selesai</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#6b0f1a]/8">
+          <tbody className="divide-y divide-[#1E4429]/8">
             {hasil.length === 0 && (
               <tr>
-                <td colSpan={4} className="text-center px-4 py-6 text-[#6b0f1a]/40">
+                <td colSpan={4} className="text-center px-4 py-6 text-[#1E4429]/40">
                   Belum ada siswa yang mengerjakan.
                 </td>
               </tr>
             )}
             {hasil.map((h, i) => (
-              <tr key={h.id} className="hover:bg-[#6b0f1a]/5 transition-colors">
-                <td className="px-4 py-2 text-[#6b0f1a]/70">{i + 1}</td>
-                <td className="px-4 py-2 font-medium text-[#3b0a0a]">{h.nama_siswa}</td>
-                <td className="px-4 py-2 font-semibold text-[#6b0f1a]">{h.skor}</td>
-                <td className="px-4 py-2 text-[#6b0f1a]/50">
+              <tr key={h.id} className="hover:bg-[#1E4429]/5 transition-colors">
+                <td className="px-4 py-2 text-[#1E4429]/70">{i + 1}</td>
+                <td className="px-4 py-2 font-medium text-[#0F2318]">{h.nama_siswa}</td>
+                <td className="px-4 py-2 font-semibold text-[#1E4429]">{h.skor}</td>
+                <td className="px-4 py-2 text-[#1E4429]/50">
                   {new Date(h.waktu_selesai).toLocaleString('id-ID')}
                 </td>
               </tr>
@@ -231,19 +231,19 @@ export default function HasilUjian() {
         {tampilkanPerSoal && hasil.length > 0 && soalDetail.length > 0 && (
           <div className="space-y-3">
             <div>
-              <h4 className="text-sm font-semibold text-[#3b0a0a]">Analisis Per Soal</h4>
-              <p className="text-xs text-[#6b0f1a]/50">
+              <h4 className="text-sm font-semibold text-[#0F2318]">Analisis Per Soal</h4>
+              <p className="text-xs text-[#1E4429]/50">
                 Arahkan kursor ke nomor soal untuk lihat teks soal & jawaban benar. Kolom dengan
                 latar merah (di bawah 50% benar) menandakan soal yang paling banyak salah —
                 kandidat untuk dijelaskan ulang / remedial.
               </p>
             </div>
 
-            <div className="overflow-x-auto border border-[#6b0f1a]/10 rounded-xl">
+            <div className="overflow-x-auto border border-[#1E4429]/10 rounded-xl">
               <table className="text-sm border-collapse w-full">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 bg-[#6b0f1a] text-white px-3 py-2 text-left whitespace-nowrap z-10">
+                    <th className="sticky left-0 bg-[#1E4429] text-white px-3 py-2 text-left whitespace-nowrap z-10">
                       Nama Siswa
                     </th>
                     {statistikPerSoal.map((s) => (
@@ -251,7 +251,7 @@ export default function HasilUjian() {
                         key={s.id}
                         title={`Soal ${s.nomor}: ${s.soal}\nJawaban benar: ${s.jawaban_benar}\n${s.persen}% siswa menjawab benar`}
                         className={`px-2 py-2 text-center font-medium cursor-help ${
-                          s.persen < 50 ? 'bg-red-100 text-red-700' : 'bg-[#f7e6e3]/60 text-[#6b0f1a]'
+                          s.persen < 50 ? 'bg-red-100 text-red-700' : 'bg-[#EAF3EA]/60 text-[#1E4429]'
                         }`}
                       >
                         {s.nomor}
@@ -261,8 +261,8 @@ export default function HasilUjian() {
                 </thead>
                 <tbody>
                   {hasil.map((h) => (
-                    <tr key={h.id} className="border-t border-[#6b0f1a]/8">
-                      <td className="sticky left-0 bg-white px-3 py-2 font-medium text-[#3b0a0a] whitespace-nowrap">
+                    <tr key={h.id} className="border-t border-[#1E4429]/8">
+                      <td className="sticky left-0 bg-white px-3 py-2 font-medium text-[#0F2318] whitespace-nowrap">
                         {h.nama_siswa}
                       </td>
                       {statistikPerSoal.map((s) => {
@@ -280,15 +280,15 @@ export default function HasilUjian() {
                       })}
                     </tr>
                   ))}
-                  <tr className="border-t-2 border-[#6b0f1a]/15 bg-[#f7e6e3]/40 font-semibold">
-                    <td className="sticky left-0 bg-[#f7e6e3]/40 px-3 py-2 text-[#3b0a0a] whitespace-nowrap">
+                  <tr className="border-t-2 border-[#1E4429]/15 bg-[#EAF3EA]/40 font-semibold">
+                    <td className="sticky left-0 bg-[#EAF3EA]/40 px-3 py-2 text-[#0F2318] whitespace-nowrap">
                       % Benar
                     </td>
                     {statistikPerSoal.map((s) => (
                       <td
                         key={s.id}
                         className={`px-2 py-2 text-center ${
-                          s.persen < 50 ? 'text-red-700' : 'text-[#6b0f1a]'
+                          s.persen < 50 ? 'text-red-700' : 'text-[#1E4429]'
                         }`}
                       >
                         {s.persen}%
