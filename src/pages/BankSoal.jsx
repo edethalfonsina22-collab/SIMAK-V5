@@ -223,7 +223,7 @@ export default function BankSoal() {
 
   return (
     <Layout title="Bank Soal" subtitle="Kumpulan soal tersimpan, siap dipakai ulang untuk Ujian Online">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#22315B] p-6 mb-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#2B5936] p-6 mb-6">
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
             <Database size={20} className="text-paper" />
