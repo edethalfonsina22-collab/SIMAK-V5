@@ -1,620 +1,390 @@
 import { useEffect, useState } from 'react'
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../lib/AuthContext'
 import Layout from '../components/Layout'
-import { Send, CheckCircle2, XCircle, Clock, Loader2, FileCheck2, Printer, FileText, Eye, Trash2 } from 'lucide-react'
+import { Loader2, Save, BookOpenCheck, Trash2, ListChecks } from 'lucide-react'
+import './Nilai.css'
 
-const STATUS_STYLE = {
-  menunggu: 'bg-brass-400/15 text-brass-600',
-  disetujui: 'bg-sage-500/15 text-sage-500',
-  ditolak: 'bg-red-100 text-red-600',
-}
-const STATUS_LABEL = { menunggu: 'Menunggu', disetujui: 'Disetujui', ditolak: 'Ditolak' }
+const JENIS_OPTS = ['Tugas', 'UH', 'UTS', 'UAS']
+const KOMPETENSI_OPTS = ['Pengetahuan', 'Keterampilan']
 
-const BULAN_ROMAWI = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
-
-// Preset jenis surat + kalimat pernyataan bawaan (bisa diedit oleh guru saat mengajukan).
-const JENIS_SURAT_PRESET = [
-  {
-    value: 'Aktif Mengajar',
-    template: 'adalah benar merupakan guru yang masih aktif mengajar di sekolah kami hingga saat surat ini diterbitkan',
-  },
-  {
-    value: 'Kelakuan Baik',
-    template: 'adalah benar berkelakuan baik selama bertugas di sekolah kami dan tidak pernah terlibat pelanggaran disiplin',
-  },
-  {
-    value: 'Masa Kerja',
-    template: 'adalah benar telah bekerja sebagai guru di sekolah kami',
-  },
-  {
-    value: 'Cuti',
-    template: 'adalah benar sedang menjalani cuti sesuai ketentuan yang berlaku di sekolah kami',
-  },
-  {
-    value: 'Lainnya',
-    template: '',
-  },
-]
-
-function formatTanggal(tgl) {
-  if (!tgl) return '-'
-  return new Date(tgl).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+// Predikat dihitung otomatis dari nilai angka — sesuai legenda rapor:
+// A: Sangat Baik (>=90), B: Baik (>=75), C: Cukup (>=60), D: Kurang (<60)
+function predikatDariNilai(nilai) {
+  if (nilai === '' || nilai === undefined || nilai === null) return null
+  const n = Number(nilai)
+  if (isNaN(n)) return null
+  if (n >= 90) return 'A'
+  if (n >= 75) return 'B'
+  if (n >= 60) return 'C'
+  return 'D'
 }
 
-// Kode singkat untuk nomor surat, diturunkan dari jenis surat. Contoh: "Aktif Mengajar" -> "SK-AKTIF"
-function kodeJenisSurat(jenis) {
-  const kataPertama = (jenis || 'Umum').trim().split(/\s+/)[0] || 'UMUM'
-  return 'SK-' + kataPertama.toUpperCase().replace(/[^A-Z0-9]/g, '')
+// Warna badge predikat, senada dengan gaya badge yang sudah dipakai di halaman lain.
+const WARNA_PREDIKAT = {
+  A: 'bg-sage-500/15 text-sage-500',
+  B: 'bg-blue-500/15 text-blue-600',
+  C: 'bg-amber-500/15 text-amber-600',
+  D: 'bg-red-500/15 text-red-600',
 }
 
-// Nomor surat otomatis, format: 001/SK-AKTIF/VIII/2026 (kode menyesuaikan jenis surat)
-async function buatNomorSurat(jenisSurat) {
-  const sekarang = new Date()
-  const tahun = sekarang.getFullYear()
-  const bulanRomawi = BULAN_ROMAWI[sekarang.getMonth()]
-  const awalTahun = `${tahun}-01-01T00:00:00.000Z`
-  const akhirTahun = `${tahun}-12-31T23:59:59.999Z`
-
-  const { count, error } = await supabase
-    .from('pengajuan_surat_aktif')
-    .select('id', { count: 'exact', head: true })
-    .not('nomor_surat', 'is', null)
-    .gte('diproses_pada', awalTahun)
-    .lte('diproses_pada', akhirTahun)
-
-  if (error) throw error
-
-  const urutan = (count || 0) + 1
-  const nomorUrut = String(urutan).padStart(3, '0')
-  return `${nomorUrut}/${kodeJenisSurat(jenisSurat)}/${bulanRomawi}/${tahun}`
+// Motif dedaunan/ranting dekoratif senada dengan Loader, Login & Kelas.
+function CircuitBackdrop({ patternId }) {
+  return (
+    <svg className="absolute inset-0 w-full h-full opacity-40 pointer-events-none" aria-hidden="true">
+      <defs>
+        <pattern id={patternId} width="120" height="120" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#4C9A6A" strokeWidth="1" opacity="0.35">
+            <path d="M0 30 H40 V60 H90" />
+            <path d="M120 90 H80 V50 H30" />
+            <path d="M60 0 V25 H100 V70" />
+            <path d="M0 100 H35 V120" />
+          </g>
+          <g fill="#E8B33D">
+            <circle cx="40" cy="30" r="2" opacity="0.6" />
+            <circle cx="90" cy="60" r="2" opacity="0.6" />
+            <circle cx="80" cy="90" r="2" opacity="0.6" />
+            <circle cx="30" cy="50" r="2" opacity="0.6" />
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+    </svg>
+  )
 }
 
-// Ambil gambar (logo / tanda tangan) dari Supabase Storage lalu embed ke PDF (PNG/JPG)
-async function embedGambarSekolah(pdfDoc, path) {
-  if (!path) return null
-  try {
-    const { data: pub } = supabase.storage.from('profil-sekolah').getPublicUrl(path)
-    const res = await fetch(pub.publicUrl)
-    if (!res.ok) return null
-    const bytes = await res.arrayBuffer()
-    const ext = path.split('.').pop().toLowerCase()
-    if (ext === 'png') return await pdfDoc.embedPng(bytes)
-    if (ext === 'jpg' || ext === 'jpeg') return await pdfDoc.embedJpg(bytes)
-    return null
-  } catch {
-    return null
-  }
-}
+export default function Nilai() {
+  const { profil } = useAuth()
+  const [activeSubTab, setActiveSubTab] = useState('input') // 'input' | 'kelola'
+  const [kelasList, setKelasList] = useState([])
+  const [kelasId, setKelasId] = useState('')
+  const [siswaList, setSiswaList] = useState([])
+  const [mataPelajaran, setMataPelajaran] = useState('')
+  const [jenis, setJenis] = useState('UH')
+  const [kompetensi, setKompetensi] = useState('Pengetahuan')
+  const [semester, setSemester] = useState('Ganjil')
+  const [tahunAjaran, setTahunAjaran] = useState('')
+  const [nilaiMap, setNilaiMap] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-// Pecah teks panjang menjadi beberapa baris agar muat di lebar halaman PDF.
-function bungkusTeks(text, font, size, maxWidth) {
-  const kata = (text || '').split(/\s+/).filter(Boolean)
-  const baris = []
-  let baris_saat_ini = ''
-  for (const kata_ini of kata) {
-    const percobaan = baris_saat_ini ? `${baris_saat_ini} ${kata_ini}` : kata_ini
-    if (font.widthOfTextAtSize(percobaan, size) > maxWidth && baris_saat_ini) {
-      baris.push(baris_saat_ini)
-      baris_saat_ini = kata_ini
-    } else {
-      baris_saat_ini = percobaan
+  // --- state untuk tab "Kelola Nilai" (lihat & hapus) ---
+  const [kelolaData, setKelolaData] = useState([])
+  const [kelolaLoading, setKelolaLoading] = useState(false)
+  const [kelolaFilterMapel, setKelolaFilterMapel] = useState('')
+
+  useEffect(() => {
+    supabase.from('kelas').select('id, nama_kelas').order('nama_kelas').then(({ data }) => {
+      setKelasList(data || [])
+      if (data?.length) setKelasId(data[0].id)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (kelasId) loadSiswa()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kelasId])
+
+  // Muat ulang daftar nilai untuk tab "Kelola Nilai" setiap kali tab itu
+  // aktif, atau filter (kelas/semester/tahun ajaran) berubah.
+  useEffect(() => {
+    if (activeSubTab === 'kelola' && siswaList.length > 0 && tahunAjaran) {
+      loadKelolaData()
     }
-  }
-  if (baris_saat_ini) baris.push(baris_saat_ini)
-  return baris
-}
+    if (activeSubTab === 'kelola' && (siswaList.length === 0 || !tahunAjaran)) {
+      setKelolaData([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSubTab, siswaList, semester, tahunAjaran])
 
-export default function PengajuanSuratAktif() {
-  const { profil, isAdmin, session } = useAuth()
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [mengajukan, setMengajukan] = useState(false)
-  const [processingId, setProcessingId] = useState(null)
-
-  // Form pengajuan (guru)
-  const [jenisSurat, setJenisSurat] = useState(JENIS_SURAT_PRESET[0].value)
-  const [jenisSuratLainnya, setJenisSuratLainnya] = useState('')
-  const [isiKeterangan, setIsiKeterangan] = useState(JENIS_SURAT_PRESET[0].template)
-  const [keperluan, setKeperluan] = useState('')
-
-  // Form penolakan admin, per baris
-  const [rejectingId, setRejectingId] = useState(null)
-  const [catatanTolak, setCatatanTolak] = useState('')
-  const [printingId, setPrintingId] = useState(null)
-  const [previewingId, setPreviewingId] = useState(null)
-  const [deletingId, setDeletingId] = useState(null)
-
-  async function load() {
+  async function loadSiswa() {
     setLoading(true)
-    const { data } = await supabase
-      .from('pengajuan_surat_aktif')
-      .select('*, guru(nama_lengkap, nip, mata_pelajaran, nuptk, tempat_lahir, tanggal_lahir)')
-      .order('dibuat_pada', { ascending: false })
-    setItems(data || [])
+    const { data } = await supabase.from('siswa').select('id, nama_lengkap').eq('kelas_id', kelasId).eq('status', 'aktif').order('nama_lengkap')
+    setSiswaList(data || [])
     setLoading(false)
   }
 
-  useEffect(() => {
-    load()
-  }, [])
-
-  function handleUbahJenisSurat(value) {
-    setJenisSurat(value)
-    const preset = JENIS_SURAT_PRESET.find((j) => j.value === value)
-    if (preset) setIsiKeterangan(preset.template)
+  // Ambil versi mata pelajaran yang sudah dirapikan (tanpa spasi di awal/akhir,
+  // spasi ganda dirapatkan) — dipakai konsisten baik saat mencari data lama
+  // maupun saat menyimpan, supaya "Matematika", "Matematika " dan " Matematika"
+  // selalu dianggap satu mapel yang sama, bukan tiga baris terpisah.
+  function mapelBersih() {
+    return mataPelajaran.trim().replace(/\s+/g, ' ')
   }
 
-  async function handleAjukan(e) {
-    e.preventDefault()
-    const jenisFinal = jenisSurat === 'Lainnya' ? jenisSuratLainnya.trim() : jenisSurat
-    if (!jenisFinal || !isiKeterangan.trim() || !keperluan.trim()) return
+  async function loadExisting() {
+    const mapel = mapelBersih()
+    if (mapel !== mataPelajaran) setMataPelajaran(mapel)
+    if (!mapel || !kelasId) return
+    const { data } = await supabase.from('nilai').select('siswa_id, nilai')
+      .eq('mata_pelajaran', mapel).eq('jenis', jenis).eq('kompetensi', kompetensi)
+      .eq('semester', semester).eq('tahun_ajaran', tahunAjaran)
+      .in('siswa_id', siswaList.map((s) => s.id))
+    const map = {}
+    ;(data || []).forEach((d) => { map[d.siswa_id] = d.nilai })
+    setNilaiMap(map)
+    setSaved(false)
+  }
 
-    setMengajukan(true)
-    const { error } = await supabase.from('pengajuan_surat_aktif').insert({
-      guru_id: profil.guru_id,
-      jenis_surat: jenisFinal,
-      isi_keterangan: isiKeterangan.trim(),
-      keperluan: keperluan.trim(),
-    })
-    setMengajukan(false)
+  async function handleSave() {
+    const mapel = mapelBersih()
+    if (!mapel) return alert('Isi nama mata pelajaran terlebih dahulu.')
+    setMataPelajaran(mapel)
+    setSaving(true)
+    const rows = siswaList
+      .filter((s) => nilaiMap[s.id] !== undefined && nilaiMap[s.id] !== '')
+      .map((s) => ({
+        siswa_id: s.id,
+        mata_pelajaran: mapel,
+        jenis,
+        kompetensi,
+        semester,
+        tahun_ajaran: tahunAjaran,
+        nilai: Number(nilaiMap[s.id]),
+        predikat: predikatDariNilai(nilaiMap[s.id]),
+        diisi_oleh: profil?.guru_id || null,
+      }))
+    const { error } = await supabase.from('nilai').upsert(rows, { onConflict: 'siswa_id,mata_pelajaran,jenis,kompetensi,semester,tahun_ajaran' })
+    setSaving(false)
+    if (!error) {
+      setSaved(true)
+      if (activeSubTab === 'kelola') loadKelolaData()
+    } else {
+      alert('Gagal menyimpan nilai: ' + error.message)
+    }
+  }
+
+  // --- fungsi untuk tab "Kelola Nilai" ---
+
+  async function loadKelolaData() {
+    setKelolaLoading(true)
+    const { data, error } = await supabase
+      .from('nilai')
+      .select('id, siswa_id, mata_pelajaran, jenis, kompetensi, nilai, predikat, siswa:siswa_id ( nama_lengkap )')
+      .in('siswa_id', siswaList.map((s) => s.id))
+      .eq('semester', semester)
+      .eq('tahun_ajaran', tahunAjaran)
+      .order('mata_pelajaran')
+      .order('nama_lengkap', { foreignTable: 'siswa' })
     if (error) {
-      alert('Gagal mengirim pengajuan: ' + error.message)
+      alert('Gagal memuat daftar nilai: ' + error.message)
+      setKelolaData([])
     } else {
-      setJenisSurat(JENIS_SURAT_PRESET[0].value)
-      setJenisSuratLainnya('')
-      setIsiKeterangan(JENIS_SURAT_PRESET[0].template)
-      setKeperluan('')
-      await load()
+      setKelolaData(data || [])
     }
+    setKelolaLoading(false)
   }
 
-  async function handleApprove(item) {
-    setProcessingId(item.id)
-    try {
-      const nomorSurat = await buatNomorSurat(item.jenis_surat)
-      const { error } = await supabase
-        .from('pengajuan_surat_aktif')
-        .update({
-          status: 'disetujui',
-          nomor_surat: nomorSurat,
-          diproses_oleh: session.user.id,
-          diproses_pada: new Date().toISOString(),
-        })
-        .eq('id', item.id)
-      if (error) throw error
-
-      // Sinkron otomatis: catat surat yang baru disetujui ke arsip Surat Keluar,
-      // supaya tidak perlu diinput manual lagi di halaman Surat Masuk & Keluar.
-      const { error: errArsip } = await supabase.from('surat').insert({
-        jenis: 'keluar',
-        nomor_surat: nomorSurat,
-        perihal: `Surat Keterangan ${item.jenis_surat || 'Aktif Mengajar'} a.n. ${item.guru?.nama_lengkap || '-'}`,
-        pengirim_tujuan: item.guru?.nama_lengkap || '-',
-        tanggal: new Date().toISOString().slice(0, 10),
-        catatan: item.keperluan ? `Keperluan: ${item.keperluan} (tercatat otomatis dari pengajuan Surat Keterangan)` : 'Tercatat otomatis dari pengajuan Surat Keterangan',
-      })
-      if (errArsip) {
-        // Persetujuan surat tetap berhasil walau pencatatan arsip gagal; cukup dicatat di console
-        // supaya admin bisa menambahkannya manual di halaman Surat Masuk & Keluar bila perlu.
-        console.error('[surat] gagal mencatat otomatis ke arsip surat keluar:', errArsip)
-      }
-
-      await load()
-    } catch (err) {
-      alert('Gagal menyetujui pengajuan: ' + err.message)
-    }
-    setProcessingId(null)
-  }
-
-  async function handleReject(item) {
-    setProcessingId(item.id)
-    const { error } = await supabase
-      .from('pengajuan_surat_aktif')
-      .update({
-        status: 'ditolak',
-        catatan_admin: catatanTolak,
-        diproses_oleh: session.user.id,
-        diproses_pada: new Date().toISOString(),
-      })
-      .eq('id', item.id)
-    if (error) alert('Gagal menolak pengajuan: ' + error.message)
-    setRejectingId(null)
-    setCatatanTolak('')
-    setProcessingId(null)
-    await load()
-  }
-
-  async function handleHapus(item) {
-    const namaJenis = item.jenis_surat || 'Aktif Mengajar'
-    const konfirmasi = window.confirm(
-      `Hapus pengajuan surat keterangan ${namaJenis}${isAdmin && item.guru?.nama_lengkap ? ` milik ${item.guru.nama_lengkap}` : ''} ini? Tindakan ini tidak bisa dibatalkan.`
+  async function hapusNilai(row) {
+    const namaSiswa = row.siswa?.nama_lengkap || 'siswa ini'
+    const ok = confirm(
+      `Hapus nilai ${row.mata_pelajaran} (${row.jenis} · ${row.kompetensi}) milik ${namaSiswa}? Tindakan ini tidak bisa dibatalkan.`
     )
-    if (!konfirmasi) return
-
-    setDeletingId(item.id)
-    try {
-      const { error } = await supabase.from('pengajuan_surat_aktif').delete().eq('id', item.id)
-      if (error) throw error
-      await load()
-    } catch (err) {
-      alert('Gagal menghapus pengajuan: ' + err.message)
+    if (!ok) return
+    const { data, error } = await supabase.from('nilai').delete().eq('id', row.id).select()
+    if (error) {
+      alert('Gagal menghapus nilai: ' + error.message)
+      return
     }
-    setDeletingId(null)
+    if (!data || data.length === 0) {
+      // Tidak ada error tapi tidak ada baris terhapus — biasanya berarti
+      // kebijakan RLS tabel nilai belum mengizinkan DELETE untuk user ini.
+      alert('Nilai tidak terhapus — kemungkinan kebijakan RLS pada tabel nilai belum mengizinkan DELETE.')
+      return
+    }
+    setKelolaData((prev) => prev.filter((d) => d.id !== row.id))
   }
 
-  // Susun PDF Surat Keterangan (jenis menyesuaikan pengajuan) dan kembalikan bytes-nya.
-  async function buatPdfSurat(item) {
-    const { data: sekolah } = await supabase.from('profil_sekolah').select('*').eq('id', 1).maybeSingle()
+  const kelasAktif = kelasList.find((k) => k.id === kelasId)
 
-    const jenisSuratItem = item.jenis_surat || 'Aktif Mengajar'
-    const isiKeteranganItem =
-      item.isi_keterangan || JENIS_SURAT_PRESET.find((j) => j.value === jenisSuratItem)?.template || 'adalah benar sebagaimana keterangan berikut'
-
-    const pdfDoc = await PDFDocument.create()
-    const page = pdfDoc.addPage([595, 842]) // A4
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
-    const tanggalCetak = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-    const tempatTanggalCetak = sekolah?.tempat_ttd
-      ? `${sekolah.tempat_ttd}, ${tanggalCetak}`
-      : tanggalCetak
-    const logoImage = await embedGambarSekolah(pdfDoc, sekolah?.logo_path)
-    const ttdImage = await embedGambarSekolah(pdfDoc, sekolah?.ttd_kepala_sekolah_path)
-
-    let y = 800
-    const draw = (text, opts = {}) => {
-      const size = opts.size ?? 11
-      const useFont = opts.bold ? bold : font
-      if (opts.center) {
-        const width = useFont.widthOfTextAtSize(text, size)
-        page.drawText(text, { x: (595 - width) / 2, y, size, font: useFont, color: rgb(0.1, 0.1, 0.1) })
-      } else {
-        page.drawText(text, { x: opts.x ?? 60, y, size, font: useFont, color: rgb(0.1, 0.1, 0.1) })
-      }
-      y -= opts.gap ?? 20
-    }
-
-    // ---------- KOP SURAT ----------
-    const kopMulaiY = y
-    if (sekolah?.dinas_pendidikan) {
-      const teksKabupaten = sekolah?.kabupaten
-        ? sekolah.kabupaten.toUpperCase().startsWith('PEMERINTAH')
-          ? sekolah.kabupaten.toUpperCase()
-          : `PEMERINTAH ${sekolah.kabupaten.toUpperCase()}`
-        : ''
-      if (teksKabupaten) draw(teksKabupaten, { bold: true, size: 12, center: true, gap: 15 })
-      draw(sekolah.dinas_pendidikan.toUpperCase(), { bold: true, size: 12, center: true, gap: 15 })
-      if (sekolah?.kecamatan) draw(sekolah.kecamatan.toUpperCase(), { bold: true, size: 11, center: true, gap: 15 })
-      draw(sekolah?.nama_sekolah || 'NAMA SEKOLAH', { bold: true, size: 14, center: true, gap: 14 })
-    } else {
-      draw(sekolah?.nama_sekolah || 'NAMA SEKOLAH', { bold: true, size: 14, center: true, gap: 16 })
-    }
-
-    const detailAlamat = [sekolah?.alamat, sekolah?.telepon ? `Telp. ${sekolah.telepon}` : null, sekolah?.email]
-      .filter(Boolean)
-      .join(' — ')
-    if (detailAlamat) draw(detailAlamat, { size: 9, center: true, gap: 20 })
-
-    if (logoImage) {
-      const logoSize = 55
-      const logoDims = logoImage.scale(logoSize / Math.max(logoImage.width, logoImage.height))
-      page.drawImage(logoImage, {
-        x: 60,
-        y: kopMulaiY - logoDims.height + 5,
-        width: logoDims.width,
-        height: logoDims.height,
-      })
-    }
-
-    page.drawLine({ start: { x: 60, y }, end: { x: 535, y }, thickness: 2, color: rgb(0.1, 0.1, 0.1) })
-    y -= 3
-    page.drawLine({ start: { x: 60, y }, end: { x: 535, y }, thickness: 0.75, color: rgb(0.1, 0.1, 0.1) })
-    y -= 26
-
-    // ---------- JUDUL & NOMOR SURAT ----------
-    draw(`SURAT KETERANGAN ${jenisSuratItem.toUpperCase()}`, { bold: true, size: 13, center: true, gap: 16 })
-    draw(`Nomor: ${item.nomor_surat || '-'}`, { size: 10, center: true, gap: 34 })
-
-    draw(`Yang bertanda tangan di bawah ini Kepala Sekolah menerangkan bahwa:`, { gap: 26 })
-    draw(`Nama`, { x: 60, gap: 0 })
-    draw(`: ${item.guru?.nama_lengkap || '-'}`, { x: 180, gap: 20 })
-    draw(`NIP`, { x: 60, gap: 0 })
-    draw(`: ${item.guru?.nip || '-'}`, { x: 180, gap: 20 })
-    draw(`NUPTK`, { x: 60, gap: 0 })
-    draw(`: ${item.guru?.nuptk || '-'}`, { x: 180, gap: 20 })
-    draw(`Tempat, Tgl Lahir`, { x: 60, gap: 0 })
-    draw(
-      `: ${item.guru?.tempat_lahir || '-'}, ${
-        item.guru?.tanggal_lahir
-          ? new Date(item.guru.tanggal_lahir).toLocaleDateString('id-ID')
-          : '-'
-      }`,
-      { x: 180, gap: 20 }
-    )
-    draw(`Jabatan / Mapel`, { x: 60, gap: 0 })
-    draw(`: ${item.guru?.mata_pelajaran || '-'}`, { x: 180, gap: 34 })
-
-    // ---------- PERNYATAAN (dinamis sesuai jenis surat, dibungkus otomatis) ----------
-    const kalimatPernyataan = `${isiKeteranganItem}${item.keperluan ? `, untuk keperluan ${item.keperluan}.` : '.'}`
-    const barisPernyataan = bungkusTeks(kalimatPernyataan, font, 11, 475)
-    barisPernyataan.forEach((baris) => draw(baris, { gap: 18 }))
-
-    draw('Demikian surat keterangan ini dibuat untuk dipergunakan', { gap: 18 })
-    draw('sebagaimana mestinya.', { gap: 50 })
-
-    // ---------- TANDA TANGAN ----------
-    draw(tempatTanggalCetak, { x: 340, gap: 20 })
-    draw(sekolah?.kepala_sekolah ? 'Kepala Sekolah,' : 'Mengetahui,', { x: 340, gap: 4 })
-
-    if (ttdImage) {
-      const ttdTinggi = 40
-      const ttdDims = ttdImage.scale(ttdTinggi / ttdImage.height)
-      const imgTopY = y
-      const imgBottomY = imgTopY - ttdTinggi
-      page.drawImage(ttdImage, { x: 340, y: imgBottomY, width: ttdDims.width, height: ttdTinggi })
-      y = imgBottomY - 10
-      draw('*Ditandatangani secara elektronik', { x: 340, size: 7, gap: 10 })
-    } else {
-      y -= 40
-    }
-
-    draw(sekolah?.kepala_sekolah || '(.........................)', { x: 340, bold: true, gap: 18 })
-    if (sekolah?.nip_kepala_sekolah) {
-      draw(`NIP. ${sekolah.nip_kepala_sekolah}`, { x: 340, size: 10, gap: 0 })
-    }
-
-    return await pdfDoc.save()
-  }
-
-  function namaFileSurat(item) {
-    const namaFileNomor = (item.nomor_surat || '').replace(/\//g, '-')
-    const namaJenis = (item.jenis_surat || 'Aktif-Mengajar').replace(/\s+/g, '-')
-    return `Surat-${namaJenis}-${namaFileNomor ? namaFileNomor + '-' : ''}${(item.guru?.nama_lengkap || 'guru').replace(/\s+/g, '-')}.pdf`
-  }
-
-  async function handleLihatSurat(item) {
-    setPreviewingId(item.id)
-    try {
-      const bytes = await buatPdfSurat(item)
-      const blob = new Blob([bytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      const tab = window.open(url, '_blank')
-      if (!tab) {
-        alert('Pop-up diblokir browser. Izinkan pop-up untuk melihat pratinjau surat.')
-      }
-      setTimeout(() => URL.revokeObjectURL(url), 60000)
-    } catch (err) {
-      alert('Gagal membuat pratinjau surat: ' + err.message)
-    }
-    setPreviewingId(null)
-  }
-
-  async function handleCetakSurat(item) {
-    setPrintingId(item.id)
-    try {
-      const bytes = await buatPdfSurat(item)
-      const blob = new Blob([bytes], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = namaFileSurat(item)
-      a.click()
-      URL.revokeObjectURL(url)
-    } catch (err) {
-      alert('Gagal membuat surat: ' + err.message)
-    }
-    setPrintingId(null)
-  }
-
-  const daftarTampil = isAdmin ? items : items.filter((i) => i.guru_id === profil?.guru_id)
-  const menungguCount = items.filter((i) => i.status === 'menunggu').length
+  const kelolaDataTersaring = kelolaFilterMapel.trim()
+    ? kelolaData.filter((d) => d.mata_pelajaran.toLowerCase().includes(kelolaFilterMapel.trim().toLowerCase()))
+    : kelolaData
 
   return (
-    <Layout
-      title="Surat Keterangan"
-      subtitle={isAdmin ? 'Tinjau dan proses pengajuan surat keterangan dari guru' : 'Ajukan surat keterangan dan pantau statusnya'}
-    >
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#22315B] p-6 mb-6">
+    <Layout title="Nilai Siswa" subtitle="Input nilai per kelas dan mata pelajaran">
+      {/* Banner — tema sirkuit neon, senada dengan Login & Kelas */}
+      <div className="relative overflow-hidden rounded-2xl nilai-banner p-6 mb-6">
+        <CircuitBackdrop patternId="pola-nilai" />
         <div className="relative z-10 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-            <FileCheck2 size={20} className="text-paper" />
+          <div className="w-11 h-11 rounded-full nilai-banner-icon flex items-center justify-center shrink-0">
+            <BookOpenCheck size={20} />
           </div>
           <div>
-            <p className="font-display font-semibold text-lg text-paper">Surat Keterangan</p>
-            <p className="text-sm text-paper/70 mt-0.5">
-              {isAdmin
-                ? menungguCount > 0
-                  ? `${menungguCount} pengajuan menunggu persetujuan`
-                  : 'Semua pengajuan sudah diproses'
-                : 'Ajukan surat keterangan dan pantau statusnya di sini'}
+            <p className="font-display font-semibold text-lg nilai-banner-title">Nilai Siswa</p>
+            <p className="text-sm nilai-banner-subtitle mt-0.5">
+              {kelasAktif ? `Kelas ${kelasAktif.nama_kelas} · ${siswaList.length} siswa aktif` : 'Pilih kelas untuk mulai input nilai'}
             </p>
           </div>
         </div>
-        <FileCheck2 size={120} className="absolute -right-4 -bottom-6 text-white/5 rotate-12" />
       </div>
 
-      {!isAdmin && (
-        <form onSubmit={handleAjukan} className="card p-6 mb-6 space-y-3">
-          <h3 className="font-display text-lg font-semibold mb-1">Ajukan Surat Keterangan Baru</h3>
+      {/* Tab: Input Nilai vs Kelola Nilai (lihat & hapus) */}
+      <div className="flex items-center gap-2 mb-5">
+        <button
+          onClick={() => setActiveSubTab('input')}
+          className={`px-3 py-1.5 rounded-lg border text-sm font-medium flex items-center gap-1.5 transition-colors ${
+            activeSubTab === 'input' ? 'bg-sage-500 text-white border-sage-500' : 'bg-white text-gray-600 border-gray-200'
+          }`}
+        >
+          <Save size={14} /> Input Nilai
+        </button>
+        <button
+          onClick={() => setActiveSubTab('kelola')}
+          className={`px-3 py-1.5 rounded-lg border text-sm font-medium flex items-center gap-1.5 transition-colors ${
+            activeSubTab === 'kelola' ? 'bg-sage-500 text-white border-sage-500' : 'bg-white text-gray-600 border-gray-200'
+          }`}
+        >
+          <ListChecks size={14} /> Lihat &amp; Hapus Nilai
+        </button>
+      </div>
 
+      <div className="nilai-card p-5 mb-5 grid grid-cols-2 md:grid-cols-6 gap-3">
+        <div>
+          <label className="nilai-label">Kelas</label>
+          <select className="nilai-input" value={kelasId} onChange={(e) => setKelasId(e.target.value)}>
+            {kelasList.map((k) => <option key={k.id} value={k.id}>{k.nama_kelas}</option>)}
+          </select>
+        </div>
+        {activeSubTab === 'input' && (
           <div>
-            <label className="label-field">Jenis Surat *</label>
-            <select
-              className="input-field w-full"
-              value={jenisSurat}
-              onChange={(e) => handleUbahJenisSurat(e.target.value)}
-            >
-              {JENIS_SURAT_PRESET.map((j) => (
-                <option key={j.value} value={j.value}>
-                  {j.value === 'Lainnya' ? 'Lainnya (isi manual)' : j.value}
-                </option>
-              ))}
+            <label className="nilai-label">Mata Pelajaran</label>
+            <input className="nilai-input" value={mataPelajaran} onChange={(e) => setMataPelajaran(e.target.value)} onBlur={loadExisting} placeholder="Matematika" />
+          </div>
+        )}
+        {activeSubTab === 'input' && (
+          <div>
+            <label className="nilai-label">Jenis</label>
+            <select className="nilai-input" value={jenis} onChange={(e) => { setJenis(e.target.value); setTimeout(loadExisting, 0) }}>
+              {JENIS_OPTS.map((j) => <option key={j} value={j}>{j}</option>)}
             </select>
           </div>
+        )}
+        {activeSubTab === 'input' && (
+          <div>
+            <label className="nilai-label">Kompetensi</label>
+            <select className="nilai-input" value={kompetensi} onChange={(e) => { setKompetensi(e.target.value); setTimeout(loadExisting, 0) }}>
+              {KOMPETENSI_OPTS.map((k) => <option key={k} value={k}>{k}</option>)}
+            </select>
+          </div>
+        )}
+        {activeSubTab === 'kelola' && (
+          <div className="md:col-span-2">
+            <label className="nilai-label">Cari Mata Pelajaran</label>
+            <input className="nilai-input" value={kelolaFilterMapel} onChange={(e) => setKelolaFilterMapel(e.target.value)} placeholder="Ketik untuk menyaring..." />
+          </div>
+        )}
+        <div>
+          <label className="nilai-label">Semester</label>
+          <select className="nilai-input" value={semester} onChange={(e) => { setSemester(e.target.value); if (activeSubTab === 'input') setTimeout(loadExisting, 0) }}>
+            <option>Ganjil</option>
+            <option>Genap</option>
+          </select>
+        </div>
+        <div>
+          <label className="nilai-label">Tahun Ajaran</label>
+          <input className="nilai-input" value={tahunAjaran} onChange={(e) => setTahunAjaran(e.target.value)} onBlur={() => { if (activeSubTab === 'input') loadExisting(); else loadKelolaData() }} placeholder="2026/2027" />
+        </div>
+      </div>
 
-          {jenisSurat === 'Lainnya' && (
-            <div>
-              <label className="label-field">Nama Jenis Surat *</label>
-              <input
-                required
-                className="input-field w-full"
-                placeholder="mis. Bebas Pustaka, Rekomendasi, dll"
-                value={jenisSuratLainnya}
-                onChange={(e) => setJenisSuratLainnya(e.target.value)}
-              />
+      {activeSubTab === 'input' && (
+        <>
+          <div className="nilai-card overflow-x-auto">
+            <table className="nilai-table">
+              <thead><tr><th>Nama Siswa</th><th className="w-40">Nilai (0–100)</th><th className="w-32">Predikat</th></tr></thead>
+              <tbody>
+                {loading && <tr><td colSpan={3} className="text-center py-8 nilai-muted">Memuat...</td></tr>}
+                {!loading && siswaList.length === 0 && <tr><td colSpan={3} className="text-center py-8 nilai-muted">Belum ada siswa aktif di kelas ini.</td></tr>}
+                {siswaList.map((s) => {
+                  const predikat = predikatDariNilai(nilaiMap[s.id])
+                  return (
+                    <tr key={s.id}>
+                      <td className="font-medium">{s.nama_lengkap}</td>
+                      <td>
+                        <input type="number" min={0} max={100} className="nilai-input"
+                          value={nilaiMap[s.id] ?? ''}
+                          onChange={(e) => setNilaiMap({ ...nilaiMap, [s.id]: e.target.value })} />
+                      </td>
+                      <td>
+                        {predikat ? (
+                          <span className={`badge ${WARNA_PREDIKAT[predikat]}`}>{predikat}</span>
+                        ) : (
+                          <span className="text-xs nilai-muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {siswaList.length > 0 && (
+            <div className="mt-4 flex items-center gap-3">
+              <button onClick={handleSave} disabled={saving} className="nilai-btn-primary">
+                {saving ? <Loader2 size={16} className="nilai-spin" /> : <Save size={16} />}
+                Simpan Nilai
+              </button>
+              {saved && <span className="text-sm nilai-saved">Tersimpan.</span>}
             </div>
           )}
-
-          <div>
-            <label className="label-field">Isi Pernyataan *</label>
-            <textarea
-              required
-              className="input-field w-full"
-              rows={2}
-              placeholder="Kalimat keterangan yang akan tertulis di surat"
-              value={isiKeterangan}
-              onChange={(e) => setIsiKeterangan(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="label-field">Keperluan *</label>
-            <textarea
-              required
-              className="input-field w-full"
-              rows={2}
-              placeholder="Keperluan surat (mis. untuk syarat KPR, tunjangan, dll)"
-              value={keperluan}
-              onChange={(e) => setKeperluan(e.target.value)}
-            />
-          </div>
-
-          <button type="submit" disabled={mengajukan} className="btn-primary">
-            {mengajukan ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            {mengajukan ? 'Mengirim...' : 'Kirim Pengajuan'}
-          </button>
-        </form>
+        </>
       )}
 
-      <div className="card p-6">
-        <h3 className="font-display text-lg font-semibold mb-4">
-          {isAdmin ? 'Semua Pengajuan' : 'Riwayat Pengajuan Saya'}
-        </h3>
-        {loading ? (
-          <p className="text-sm text-ink-700/50">Memuat...</p>
-        ) : daftarTampil.length === 0 ? (
-          <p className="text-sm text-ink-700/50">Belum ada pengajuan.</p>
-        ) : (
-          <ul className="divide-y divide-ink-900/[0.06]">
-            {daftarTampil.map((item) => (
-              <li key={item.id} className="py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${STATUS_STYLE[item.status]}`}>
-                      {STATUS_LABEL[item.status]}
-                    </span>
-                    <span className="text-sm font-medium text-ink-900">{item.jenis_surat || 'Aktif Mengajar'}</span>
-                    {item.nomor_surat && (
-                      <span className="flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-ink-900/[0.05] text-ink-700/70">
-                        <FileText size={11} /> {item.nomor_surat}
-                      </span>
+      {activeSubTab === 'kelola' && (
+        <div className="nilai-card overflow-x-auto">
+          <table className="nilai-table">
+            <thead>
+              <tr>
+                <th>Nama Siswa</th>
+                <th>Mata Pelajaran</th>
+                <th className="w-24">Jenis</th>
+                <th className="w-32">Kompetensi</th>
+                <th className="w-24">Nilai</th>
+                <th className="w-24">Predikat</th>
+                <th className="w-20">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kelolaLoading && (
+                <tr><td colSpan={7} className="text-center py-8 nilai-muted">Memuat...</td></tr>
+              )}
+              {!kelolaLoading && !tahunAjaran && (
+                <tr><td colSpan={7} className="text-center py-8 nilai-muted">Isi Tahun Ajaran dulu untuk melihat daftar nilai.</td></tr>
+              )}
+              {!kelolaLoading && tahunAjaran && kelolaDataTersaring.length === 0 && (
+                <tr><td colSpan={7} className="text-center py-8 nilai-muted">Belum ada nilai tersimpan untuk kelas, semester &amp; tahun ajaran ini.</td></tr>
+              )}
+              {!kelolaLoading && kelolaDataTersaring.map((row) => (
+                <tr key={row.id}>
+                  <td className="font-medium">{row.siswa?.nama_lengkap || '—'}</td>
+                  <td>{row.mata_pelajaran}</td>
+                  <td>{row.jenis}</td>
+                  <td>{row.kompetensi}</td>
+                  <td>{row.nilai}</td>
+                  <td>
+                    {row.predikat ? (
+                      <span className={`badge ${WARNA_PREDIKAT[row.predikat]}`}>{row.predikat}</span>
+                    ) : (
+                      <span className="text-xs nilai-muted">—</span>
                     )}
-                  </div>
-                  <p className="text-xs text-ink-700/50 mt-1">
-                    {isAdmin && <>{item.guru?.nama_lengkap || 'Guru'} · </>}
-                    {formatTanggal(item.dibuat_pada)}
-                  </p>
-                  {item.keperluan && <p className="text-xs text-ink-700/60 mt-1">Keperluan: {item.keperluan}</p>}
-                  {item.status === 'ditolak' && item.catatan_admin && (
-                    <p className="text-xs text-red-600 mt-1">Alasan ditolak: {item.catatan_admin}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  {item.status === 'disetujui' && (
-                    <>
-                      <button
-                        onClick={() => handleLihatSurat(item)}
-                        disabled={previewingId === item.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-ink-700/70 hover:bg-ink-900/[0.05] disabled:opacity-50"
-                      >
-                        {previewingId === item.id ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-                        Lihat
-                      </button>
-                      <button
-                        onClick={() => handleCetakSurat(item)}
-                        disabled={printingId === item.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sage-500 hover:bg-sage-500/10 disabled:opacity-50"
-                      >
-                        {printingId === item.id ? <Loader2 size={14} className="animate-spin" /> : <Printer size={14} />}
-                        Cetak Surat
-                      </button>
-                    </>
-                  )}
-
-                  {isAdmin && item.status === 'menunggu' && (
-                    <>
-                      <button
-                        onClick={() => handleApprove(item)}
-                        disabled={processingId === item.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sage-500/15 text-sage-500 disabled:opacity-50"
-                      >
-                        {processingId === item.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                        Setujui
-                      </button>
-
-                      {rejectingId === item.id ? (
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            className="input-field !py-1.5 !text-xs w-40"
-                            placeholder="Alasan tolak"
-                            value={catatanTolak}
-                            onChange={(e) => setCatatanTolak(e.target.value)}
-                          />
-                          <button
-                            onClick={() => handleReject(item)}
-                            disabled={processingId === item.id}
-                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-600"
-                          >
-                            Kirim
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setRejectingId(item.id)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-100 text-red-600"
-                        >
-                          <XCircle size={14} /> Tolak
-                        </button>
-                      )}
-                    </>
-                  )}
-
-                  {item.status === 'menunggu' && !isAdmin && (
-                    <span className="flex items-center gap-1.5 text-xs text-ink-700/40">
-                      <Clock size={14} /> Menunggu persetujuan
-                    </span>
-                  )}
-
-                  {(isAdmin || (item.guru_id === profil?.guru_id && item.status === 'menunggu')) && (
+                  </td>
+                  <td>
                     <button
-                      onClick={() => handleHapus(item)}
-                      disabled={deletingId === item.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
-                      title="Hapus pengajuan"
+                      onClick={() => hapusNilai(row)}
+                      title="Hapus nilai ini"
+                      className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
                     >
-                      {deletingId === item.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                      Hapus
+                      <Trash2 size={14} />
                     </button>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </Layout>
   )
 }
