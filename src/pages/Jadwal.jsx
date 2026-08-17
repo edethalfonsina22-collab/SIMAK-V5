@@ -219,17 +219,17 @@ export default function Jadwal() {
   return (
     <Layout title="Jadwal Pelajaran" subtitle="Susunan jam mengajar per kelas" actions={
       <div className="flex items-center gap-2">
-        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#6b0f1a] border border-[#6b0f1a]/20 hover:bg-[#6b0f1a]/5 transition-colors" onClick={() => setShowImport(true)}>
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1E4429] border border-[#1E4429]/20 hover:bg-[#1E4429]/5 transition-colors" onClick={() => setShowImport(true)}>
           <Upload size={16} /> Import Massal
         </button>
-        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors shadow-sm shadow-[#6b0f1a]/30" onClick={() => setShowForm(true)}>
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors shadow-sm shadow-[#1E4429]/30" onClick={() => setShowForm(true)}>
           <Plus size={16} /> Tambah Jadwal
         </button>
       </div>
     }>
-      <div className="min-h-screen bg-gradient-to-b from-[#fdf3f1] to-[#f7e6e3] -m-4 p-4 rounded-xl">
-      <div className="bg-white rounded-xl border border-[#6b0f1a]/10 shadow-sm p-4 mb-4">
-        <select className="max-w-xs px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={filterKelas} onChange={(e) => setFilterKelas(e.target.value)}>
+      <div className="min-h-screen bg-gradient-to-b from-[#F5F9F2] to-[#EAF3EA] -m-4 p-4 rounded-xl">
+      <div className="bg-white rounded-xl border border-[#1E4429]/10 shadow-sm p-4 mb-4">
+        <select className="max-w-xs px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={filterKelas} onChange={(e) => setFilterKelas(e.target.value)}>
           <option value="">Semua Kelas</option>
           {kelasList.map((k) => <option key={k.id} value={k.id}>{k.nama_kelas}</option>)}
         </select>
@@ -240,14 +240,14 @@ export default function Jadwal() {
           const items = filtered.filter((j) => j.hari === hari)
           if (items.length === 0) return null
           return (
-            <div key={hari} className="bg-white rounded-xl border border-[#6b0f1a]/10 shadow-sm p-5">
-              <h3 className="font-display text-base font-semibold mb-3 text-[#3b0a0a] flex items-center gap-2">
-                <span className="w-1.5 h-5 rounded-full bg-[#d4a017]"></span>
+            <div key={hari} className="bg-white rounded-xl border border-[#1E4429]/10 shadow-sm p-5">
+              <h3 className="font-display text-base font-semibold mb-3 text-[#0F2318] flex items-center gap-2">
+                <span className="w-1.5 h-5 rounded-full bg-[#E8B33D]"></span>
                 {hari}
               </h3>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-[#6b0f1a] text-white">
+                  <tr className="bg-[#1E4429] text-white">
                     <th className="text-left px-4 py-2.5 rounded-l-lg font-medium">Jam</th>
                     <th className="text-left px-4 py-2.5 font-medium">Kelas</th>
                     <th className="text-left px-4 py-2.5 font-medium">Mata Pelajaran</th>
@@ -255,16 +255,16 @@ export default function Jadwal() {
                     <th className="px-4 py-2.5 rounded-r-lg"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#6b0f1a]/8">
+                <tbody className="divide-y divide-[#1E4429]/8">
                   {items.map((j) => (
-                    <tr key={j.id} className="hover:bg-[#6b0f1a]/5 transition-colors">
-                      <td className="px-4 py-3 font-mono text-xs text-[#6b0f1a]">{j.jam_mulai?.slice(0,5)} – {j.jam_selesai?.slice(0,5)}</td>
+                    <tr key={j.id} className="hover:bg-[#1E4429]/5 transition-colors">
+                      <td className="px-4 py-3 font-mono text-xs text-[#1E4429]">{j.jam_mulai?.slice(0,5)} – {j.jam_selesai?.slice(0,5)}</td>
                       <td className="px-4 py-3">{j.kelas?.nama_kelas || '—'}</td>
-                      <td className="px-4 py-3 font-medium text-[#3b0a0a]">{j.mata_pelajaran}</td>
+                      <td className="px-4 py-3 font-medium text-[#0F2318]">{j.mata_pelajaran}</td>
                       <td className="px-4 py-3">{j.guru?.nama_lengkap || '—'}</td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <button onClick={() => handleEdit(j)} className="p-1.5 hover:bg-[#6b0f1a]/10 rounded-lg text-[#6b0f1a] mr-1"><Pencil size={14} /></button>
-                        <button onClick={() => handleDelete(j.id)} className="p-1.5 hover:bg-[#6b0f1a]/10 rounded-lg text-[#8f1f22]"><Trash2 size={14} /></button>
+                        <button onClick={() => handleEdit(j)} className="p-1.5 hover:bg-[#1E4429]/10 rounded-lg text-[#1E4429] mr-1"><Pencil size={14} /></button>
+                        <button onClick={() => handleDelete(j.id)} className="p-1.5 hover:bg-[#1E4429]/10 rounded-lg text-[#B91C1C]"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   ))}
@@ -273,79 +273,79 @@ export default function Jadwal() {
             </div>
           )
         })}
-        {!loading && filtered.length === 0 && <p className="text-sm text-[#6b0f1a]/50">Belum ada jadwal untuk ditampilkan.</p>}
+        {!loading && filtered.length === 0 && <p className="text-sm text-[#1E4429]/50">Belum ada jadwal untuk ditampilkan.</p>}
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3b0a0a]/50 backdrop-blur-sm p-4">
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative border-t-4 border-[#6b0f1a]">
-            <button type="button" onClick={closeFormModal} className="absolute top-4 right-4 text-[#6b0f1a]/40 hover:text-[#6b0f1a]"><X size={20} /></button>
-            <h2 className="font-display text-xl font-semibold mb-4 text-[#3b0a0a]">{editingId ? 'Edit Jadwal' : 'Tambah Jadwal'}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F2318]/50 backdrop-blur-sm p-4">
+          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative border-t-4 border-[#1E4429]">
+            <button type="button" onClick={closeFormModal} className="absolute top-4 right-4 text-[#1E4429]/40 hover:text-[#1E4429]"><X size={20} /></button>
+            <h2 className="font-display text-xl font-semibold mb-4 text-[#0F2318]">{editingId ? 'Edit Jadwal' : 'Tambah Jadwal'}</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Kelas</label>
-                <select required className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.kelas_id} onChange={(e) => setForm({ ...form, kelas_id: e.target.value })}>
+                <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Kelas</label>
+                <select required className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.kelas_id} onChange={(e) => setForm({ ...form, kelas_id: e.target.value })}>
                   <option value="">Pilih kelas</option>
                   {kelasList.map((k) => <option key={k.id} value={k.id}>{k.nama_kelas}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Mata Pelajaran</label>
-                <input required className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.mata_pelajaran} onChange={(e) => setForm({ ...form, mata_pelajaran: e.target.value })} />
+                <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Mata Pelajaran</label>
+                <input required className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.mata_pelajaran} onChange={(e) => setForm({ ...form, mata_pelajaran: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Guru Pengajar</label>
-                <select className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.guru_id} onChange={(e) => setForm({ ...form, guru_id: e.target.value })}>
+                <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Guru Pengajar</label>
+                <select className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.guru_id} onChange={(e) => setForm({ ...form, guru_id: e.target.value })}>
                   <option value="">— Pilih guru —</option>
                   {guruList.map((g) => <option key={g.id} value={g.id}>{g.nama_lengkap}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Hari</label>
-                <select className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.hari} onChange={(e) => setForm({ ...form, hari: e.target.value })}>
+                <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Hari</label>
+                <select className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.hari} onChange={(e) => setForm({ ...form, hari: e.target.value })}>
                   {HARI.map((h) => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Jam Mulai</label>
-                  <input required type="time" className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.jam_mulai} onChange={(e) => setForm({ ...form, jam_mulai: e.target.value })} />
+                  <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Jam Mulai</label>
+                  <input required type="time" className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.jam_mulai} onChange={(e) => setForm({ ...form, jam_mulai: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[#6b0f1a]/70 uppercase tracking-wide mb-1.5 block">Jam Selesai</label>
-                  <input required type="time" className="w-full px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors" value={form.jam_selesai} onChange={(e) => setForm({ ...form, jam_selesai: e.target.value })} />
+                  <label className="text-xs font-medium text-[#1E4429]/70 uppercase tracking-wide mb-1.5 block">Jam Selesai</label>
+                  <input required type="time" className="w-full px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors" value={form.jam_selesai} onChange={(e) => setForm({ ...form, jam_selesai: e.target.value })} />
                 </div>
               </div>
             </div>
             <div className="mt-5 flex justify-end gap-3">
-              <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#f7e6e3] text-[#6b0f1a] hover:bg-[#efd3ce] transition-colors" onClick={closeFormModal}>Batal</button>
-              <button type="submit" disabled={saving} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors disabled:opacity-50">{saving && <Loader2 size={16} className="animate-spin" />} {editingId ? 'Update' : 'Simpan'}</button>
+              <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#EAF3EA] text-[#1E4429] hover:bg-[#DBE9DB] transition-colors" onClick={closeFormModal}>Batal</button>
+              <button type="submit" disabled={saving} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors disabled:opacity-50">{saving && <Loader2 size={16} className="animate-spin" />} {editingId ? 'Update' : 'Simpan'}</button>
             </div>
           </form>
         </div>
       )}
 
       {showImport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3b0a0a]/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative border-t-4 border-[#6b0f1a] max-h-[90vh] overflow-y-auto">
-            <button type="button" onClick={closeImportModal} className="absolute top-4 right-4 text-[#6b0f1a]/40 hover:text-[#6b0f1a]"><X size={20} /></button>
-            <h2 className="font-display text-xl font-semibold mb-1 text-[#3b0a0a]">Import Jadwal Massal</h2>
-            <p className="text-sm text-[#6b0f1a]/60 mb-4">Unggah file CSV atau tempel data langsung. Kolom: kelas, mata_pelajaran, guru, hari, jam_mulai, jam_selesai</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F2318]/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative border-t-4 border-[#1E4429] max-h-[90vh] overflow-y-auto">
+            <button type="button" onClick={closeImportModal} className="absolute top-4 right-4 text-[#1E4429]/40 hover:text-[#1E4429]"><X size={20} /></button>
+            <h2 className="font-display text-xl font-semibold mb-1 text-[#0F2318]">Import Jadwal Massal</h2>
+            <p className="text-sm text-[#1E4429]/60 mb-4">Unggah file CSV atau tempel data langsung. Kolom: kelas, mata_pelajaran, guru, hari, jam_mulai, jam_selesai</p>
 
             {!importResult && (
               <>
                 <div className="flex items-center gap-3 mb-3">
-                  <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#f7e6e3] text-[#6b0f1a] hover:bg-[#efd3ce] transition-colors cursor-pointer">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#EAF3EA] text-[#1E4429] hover:bg-[#DBE9DB] transition-colors cursor-pointer">
                     <Upload size={16} /> Pilih File CSV
                     <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleImportFile} />
                   </label>
-                  <button type="button" onClick={downloadTemplate} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#6b0f1a] border border-[#6b0f1a]/20 hover:bg-[#6b0f1a]/5 transition-colors">
+                  <button type="button" onClick={downloadTemplate} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white text-[#1E4429] border border-[#1E4429]/20 hover:bg-[#1E4429]/5 transition-colors">
                     <Download size={16} /> Unduh Template
                   </button>
                 </div>
 
                 <textarea
-                  className="w-full h-32 px-3 py-2 rounded-lg border border-[#6b0f1a]/15 focus:border-[#6b0f1a] focus:ring-2 focus:ring-[#6b0f1a]/20 outline-none transition-colors font-mono text-xs"
+                  className="w-full h-32 px-3 py-2 rounded-lg border border-[#1E4429]/15 focus:border-[#1E4429] focus:ring-2 focus:ring-[#1E4429]/20 outline-none transition-colors font-mono text-xs"
                   placeholder="kelas,mata_pelajaran,guru,hari,jam_mulai,jam_selesai&#10;Kelas 1A,Matematika,Budi Santoso,Senin,07:00,08:30"
                   value={importText}
                   onChange={handleImportTextChange}
@@ -357,9 +357,9 @@ export default function Jadwal() {
                       <span className="inline-flex items-center gap-1 text-emerald-700"><CheckCircle2 size={14} /> {validCount} valid</span>
                       {invalidCount > 0 && <span className="inline-flex items-center gap-1 text-red-700"><AlertCircle size={14} /> {invalidCount} bermasalah</span>}
                     </div>
-                    <div className="max-h-60 overflow-y-auto border border-[#6b0f1a]/10 rounded-lg">
+                    <div className="max-h-60 overflow-y-auto border border-[#1E4429]/10 rounded-lg">
                       <table className="w-full text-xs">
-                        <thead className="sticky top-0 bg-[#6b0f1a] text-white">
+                        <thead className="sticky top-0 bg-[#1E4429] text-white">
                           <tr>
                             <th className="text-left px-3 py-2">#</th>
                             <th className="text-left px-3 py-2">Kelas</th>
@@ -370,7 +370,7 @@ export default function Jadwal() {
                             <th className="text-left px-3 py-2">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#6b0f1a]/8">
+                        <tbody className="divide-y divide-[#1E4429]/8">
                           {importRows.map((r) => (
                             <tr key={r.rowNumber} className={r.errors.length ? 'bg-red-50' : ''}>
                               <td className="px-3 py-2">{r.rowNumber}</td>
@@ -393,12 +393,12 @@ export default function Jadwal() {
                 )}
 
                 <div className="mt-5 flex justify-end gap-3">
-                  <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#f7e6e3] text-[#6b0f1a] hover:bg-[#efd3ce] transition-colors" onClick={closeImportModal}>Batal</button>
+                  <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium bg-[#EAF3EA] text-[#1E4429] hover:bg-[#DBE9DB] transition-colors" onClick={closeImportModal}>Batal</button>
                   <button
                     type="button"
                     disabled={importing || validCount === 0}
                     onClick={handleImportSubmit}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors disabled:opacity-50"
                   >
                     {importing && <Loader2 size={16} className="animate-spin" />} Import {validCount > 0 ? `${validCount} Jadwal` : ''}
                   </button>
@@ -409,9 +409,9 @@ export default function Jadwal() {
             {importResult && (
               <div className="text-center py-8">
                 <CheckCircle2 size={40} className="mx-auto text-emerald-600 mb-3" />
-                <p className="font-medium text-[#3b0a0a]">Berhasil mengimpor {importResult.success} jadwal.</p>
+                <p className="font-medium text-[#0F2318]">Berhasil mengimpor {importResult.success} jadwal.</p>
                 {importResult.failed > 0 && <p className="text-sm text-red-700 mt-1">{importResult.failed} baris dilewati karena tidak valid.</p>}
-                <button type="button" onClick={closeImportModal} className="mt-5 px-4 py-2 rounded-lg text-sm font-medium bg-[#6b0f1a] text-white hover:bg-[#7d1420] transition-colors">Tutup</button>
+                <button type="button" onClick={closeImportModal} className="mt-5 px-4 py-2 rounded-lg text-sm font-medium bg-[#1E4429] text-white hover:bg-[#2B5936] transition-colors">Tutup</button>
               </div>
             )}
           </div>
