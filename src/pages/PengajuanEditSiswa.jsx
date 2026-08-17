@@ -240,7 +240,7 @@ export default function PengajuanEditSiswa() {
       title="Perbaikan Data Siswa"
       subtitle={isAdmin ? 'Tinjau dan proses pengajuan perbaikan data dari guru' : 'Ajukan perbaikan data siswa di kelas yang Anda ampu'}
     >
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#22315B] p-6 mb-6">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ink-950 to-[#2B5936] p-6 mb-6">
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center shrink-0">
             <UserCog size={20} className="text-paper" />
