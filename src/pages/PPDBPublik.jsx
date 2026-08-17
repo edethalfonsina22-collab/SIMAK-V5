@@ -36,11 +36,11 @@ function IlustrasiSemangatSekolah() {
       <circle cx="200" cy="170" r="150" fill="url(#haloGlow)" />
 
       {/* Bayangan tanah */}
-      <ellipse cx="200" cy="322" rx="70" ry="12" fill="#0B1220" opacity="0.08" />
+      <ellipse cx="200" cy="322" rx="70" ry="12" fill="#0F2318" opacity="0.08" />
 
       {/* Confetti / bintang melayang */}
       <g className="anim-float-a">
-        <path d="M60 90 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#D9A441" />
+        <path d="M60 90 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#E8B33D" />
       </g>
       <g className="anim-float-b">
         <circle cx="335" cy="120" r="6" fill="#6B9080" />
@@ -57,8 +57,8 @@ function IlustrasiSemangatSekolah() {
 
       {/* Garis gerak melompat */}
       <g className="anim-bounce" opacity="0.5">
-        <path d="M150 300 q25 10 50 0" stroke="#0B1220" strokeWidth="4" strokeLinecap="round" fill="none" />
-        <path d="M235 300 q20 8 40 0" stroke="#0B1220" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <path d="M150 300 q25 10 50 0" stroke="#0F2318" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <path d="M235 300 q20 8 40 0" stroke="#0F2318" strokeWidth="4" strokeLinecap="round" fill="none" />
       </g>
 
       {/* Karakter: anak SD melompat memegang buku */}
@@ -70,8 +70,8 @@ function IlustrasiSemangatSekolah() {
         <path d="M182 235 q-10 30 -34 42" stroke="#1F2A44" strokeWidth="18" strokeLinecap="round" fill="none" />
         <path d="M198 235 q18 22 14 48" stroke="#1F2A44" strokeWidth="18" strokeLinecap="round" fill="none" />
         {/* Sepatu */}
-        <ellipse cx="146" cy="279" rx="14" ry="9" fill="#D9A441" />
-        <ellipse cx="214" cy="285" rx="14" ry="9" fill="#D9A441" />
+        <ellipse cx="146" cy="279" rx="14" ry="9" fill="#E8B33D" />
+        <ellipse cx="214" cy="285" rx="14" ry="9" fill="#E8B33D" />
 
         {/* Badan / baju */}
         <rect x="163" y="165" width="54" height="72" rx="20" fill="#6B9080" />
