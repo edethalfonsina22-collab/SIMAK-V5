@@ -6,6 +6,7 @@ import Dokumen from './pages/Dokumen'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './lib/AuthContext'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Siswa from './pages/Siswa'
 import HasilUjian from './pages/HasilUjian'
@@ -69,6 +70,7 @@ export default function App() {
       <Route path="/ppdb" element={<PPDBPublik />} />
       <Route path="/ujian-online" element={<UjianOnline />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/daftar" element={<Register />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/siswa" element={<ProtectedRoute><Siswa /></ProtectedRoute>} />
       <Route path="/hasil-ujian" element={<ProtectedRoute><HasilUjian /></ProtectedRoute>} />
