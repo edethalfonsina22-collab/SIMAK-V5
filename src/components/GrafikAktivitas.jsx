@@ -104,7 +104,7 @@ export default function GrafikAktivitas({ guruId }) {
     <div className="card relative overflow-hidden p-6 space-y-4">
       <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-900 to-black" />
       <div className="flex items-center gap-2">
-        <TrendingUp size={18} className="text-blue-900" />
+        <TrendingUp size={18} className="text-ink-900" />
         <h3 className="font-display font-semibold text-ink-950">Aktivitas Administrasi Kelas</h3>
       </div>
       <p className="text-xs text-ink-700/60 -mt-2">
