@@ -47,35 +47,22 @@ export default function Login() {
 
   return (
     <div className="login-shell min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      <div className="login-grid" aria-hidden />
-      <div className="login-code" aria-hidden />
-
-      {/* Bendera merah-putih (bunting) di bagian atas — nuansa HUT RI */}
-      <div className="merdeka-bunting" aria-hidden>
-        {Array.from({ length: 14 }).map((_, i) => (
-          <span key={i} className={`merdeka-flag ${i % 2 === 0 ? 'is-red' : 'is-white'}`} />
-        ))}
+      <div className="login-sun" aria-hidden />
+      <div className="login-mountains" aria-hidden>
+        <svg viewBox="0 0 800 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path className="login-mountain-back" d="M0 220 L0 140 L120 70 L230 150 L330 90 L460 160 L560 60 L680 140 L800 100 L800 220 Z" />
+          <path className="login-mountain-front" d="M0 220 L0 170 L90 120 L200 180 L300 130 L420 190 L540 110 L650 175 L800 150 L800 220 Z" />
+        </svg>
       </div>
 
       <div className="w-full max-w-sm relative z-10">
-        {/* Pita ucapan Dirgahayu RI ke-81 */}
-        <div
-          className={`merdeka-ribbon mb-5 transition-all duration-700 ease-out ${
-            mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-          }`}
-        >
-          <span className="merdeka-ribbon-star">★</span>
-          <span>Dirgahayu Republik Indonesia ke-81</span>
-          <span className="merdeka-ribbon-star">★</span>
-        </div>
-
         <div
           className={`text-center mb-8 transition-all duration-700 ease-out ${
             mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
           }`}
         >
           <div className="relative w-12 h-12 mx-auto mb-4">
-            {/* Cincin cahaya teal di belakang logo, berdenyut pelan — senada dengan loader */}
+            {/* Cincin cahaya hijau daun di belakang logo, berdenyut pelan — senada dengan loader */}
             <div className="login-badge-glow absolute inset-0 rounded-xl" />
             <div className="login-badge relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl">
               S
@@ -88,9 +75,6 @@ export default function Login() {
           {namaSekolah && (
             <p className="login-school text-sm font-medium mt-1.5">{namaSekolah}</p>
           )}
-          <p className="merdeka-subtag text-[11px] font-medium mt-2 tracking-[0.15em] uppercase">
-            17 Agustus 1945 &ndash; 17 Agustus 2026
-          </p>
         </div>
 
         <form
@@ -148,7 +132,7 @@ export default function Login() {
             Masuk
           </button>
 
-          <p className="text-center text-xs mt-1" style={{ color: 'var(--code-text)' }}>
+          <p className="text-center text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
             Belum punya akun?{' '}
             <a
               href="/daftar"
@@ -168,151 +152,71 @@ export default function Login() {
           This application was crafted by{' '}
           <span className="not-italic font-semibold">LD_SALIM</span>
         </p>
-
-        <p className="merdeka-footer text-center text-[11px] mt-3 tracking-wide">
-          🇮🇩 Merdeka! Selamat Hari Kemerdekaan RI ke-81
-        </p>
       </div>
 
-      {/* Style khusus halaman login — palet & efek disamakan dengan Loader.css */}
+      {/* Style khusus halaman login — tema hutan/pegunungan, cerah siang hari */}
       <style>{`
         .login-shell {
-          --bg-1: #050b09;
-          --bg-2: #0b201c;
-          --accent: #5eead4;
-          --accent-strong: #9dfff0;
-          --ring: rgba(94, 234, 212, 0.28);
-          --ring-soft: rgba(94, 234, 212, 0.12);
-          --text-primary: #eafffa;
-          --text-accent: #5eead4;
-          --code-text: rgba(140, 214, 198, 0.32);
-          --merah: #ff4d4d;
-          --merah-strong: #e11d2e;
-          --putih: #ffffff;
-          background:
-            radial-gradient(circle at 30% 25%, rgba(94, 234, 212, 0.10), transparent 55%),
-            linear-gradient(160deg, var(--bg-1), var(--bg-2) 60%, var(--bg-1));
+          --sky-1: #cdeaf6;
+          --sky-2: #eaf6e3;
+          --accent: #2f8f56;
+          --accent-strong: #6cc98a;
+          --sun: #f3b93c;
+          --ring: rgba(47, 143, 86, 0.25);
+          --ring-soft: rgba(47, 143, 86, 0.12);
+          --text-primary: #163a22;
+          --text-muted: #4f6b57;
+          --text-accent: #2f8f56;
+          background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, #dcefd9 100%);
         }
 
-        .login-grid {
+        .login-sun {
           position: absolute;
-          inset: 0;
-          background-image:
-            linear-gradient(var(--ring-soft) 1px, transparent 1px),
-            linear-gradient(90deg, var(--ring-soft) 1px, transparent 1px);
-          background-size: 36px 36px;
-          opacity: 0.35;
-          mask-image: radial-gradient(circle at 50% 35%, black 0%, transparent 70%);
-        }
-
-        .login-code {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 22%;
-          height: 100%;
+          top: -60px;
+          right: 8%;
+          width: 220px;
+          height: 220px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(243, 185, 60, 0.55), transparent 70%);
+          filter: blur(2px);
           pointer-events: none;
-          background-image: repeating-linear-gradient(
-            var(--code-text) 0px,
-            var(--code-text) 1px,
-            transparent 1px,
-            transparent 16px
-          );
-          opacity: 0.35;
-          -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-          mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
         }
 
-        /* --- Nuansa HUT Kemerdekaan RI ke-81 --- */
-        .merdeka-bunting {
+        .login-mountains {
           position: absolute;
-          top: 0;
           left: 0;
           right: 0;
-          display: flex;
-          justify-content: space-between;
-          padding: 0 4%;
+          bottom: 0;
+          height: 34%;
           pointer-events: none;
-          z-index: 5;
         }
-        .merdeka-flag {
-          width: 0;
-          height: 0;
-          border-left: 10px solid transparent;
-          border-right: 10px solid transparent;
-          border-top: 16px solid var(--merah-strong);
-          opacity: 0.85;
-          animation: bunting-sway 3.4s ease-in-out infinite;
-          transform-origin: top center;
-        }
-        .merdeka-flag.is-white { border-top-color: var(--putih); opacity: 0.75; }
-        .merdeka-flag:nth-child(odd) { animation-delay: 0.2s; }
-        .merdeka-flag:nth-child(3n) { animation-delay: 0.6s; }
-
-        .merdeka-ribbon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          text-align: center;
-          color: #fff3f3;
-          background: linear-gradient(90deg, var(--merah-strong), var(--merah), var(--merah-strong));
-          border-radius: 999px;
-          padding: 6px 14px;
-          box-shadow: 0 0 18px rgba(225, 29, 46, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-        }
-        .merdeka-ribbon-star { color: #ffe9a8; }
-
-        .merdeka-subtag {
-          color: var(--merah);
-          opacity: 0.85;
-        }
-
-        .merdeka-footer {
-          color: var(--code-text);
-        }
+        .login-mountains svg { width: 100%; height: 100%; display: block; }
+        .login-mountain-back { fill: #9fcdae; opacity: 0.7; }
+        .login-mountain-front { fill: #6fae7f; opacity: 0.85; }
 
         .login-badge-glow {
-          background: var(--accent);
+          background: var(--sun);
           filter: blur(10px);
-          opacity: 0.4;
+          opacity: 0.45;
           animation: glow-pulse 2.8s ease-in-out infinite;
         }
         .login-badge {
           background: linear-gradient(160deg, var(--accent-strong), var(--accent));
-          color: #06201c;
-          box-shadow: 0 0 18px rgba(94, 234, 212, 0.45);
+          color: #ffffff;
+          box-shadow: 0 4px 16px rgba(47, 143, 86, 0.35);
         }
 
-        .login-title {
-          color: var(--text-primary);
-          text-shadow: 0 0 14px rgba(94, 234, 212, 0.35);
-        }
-        .login-tagline { color: var(--code-text); }
+        .login-title { color: var(--text-primary); }
+        .login-tagline { color: var(--text-muted); }
         .login-school { color: var(--text-accent); }
 
         .login-card {
           position: relative;
           border-radius: 16px;
-          background: linear-gradient(160deg, rgba(11, 32, 28, 0.85), rgba(5, 11, 9, 0.9));
-          border: 1px solid var(--ring-soft);
-          box-shadow: 0 0 40px rgba(94, 234, 212, 0.06), 0 20px 40px rgba(0, 0, 0, 0.35);
-        }
-        .login-card::before {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          border-radius: 16px;
-          padding: 1px;
-          background: linear-gradient(120deg, rgba(225, 29, 46, 0.35), transparent 35%, transparent 65%, rgba(255, 255, 255, 0.2));
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          pointer-events: none;
+          background: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(6px);
+          border: 1px solid rgba(47, 143, 86, 0.18);
+          box-shadow: 0 20px 40px -12px rgba(22, 58, 34, 0.18);
         }
 
         .login-eyebrow {
@@ -320,24 +224,24 @@ export default function Login() {
           font-weight: 600;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: var(--code-text);
+          color: var(--text-muted);
         }
 
         .login-field {
-          background: rgba(94, 234, 212, 0.05);
+          background: rgba(255, 255, 255, 0.9);
           border: 1px solid var(--ring-soft);
           border-radius: 10px;
           padding: 10px 12px;
           color: var(--text-primary);
           outline: none;
         }
-        .login-field::placeholder { color: rgba(234, 255, 250, 0.35); }
+        .login-field::placeholder { color: rgba(22, 58, 34, 0.35); }
         .login-field:focus {
           border-color: var(--accent);
-          box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.18);
+          box-shadow: 0 0 0 3px rgba(47, 143, 86, 0.16);
         }
 
-        .login-error { color: #ff9d9d; }
+        .login-error { color: #c0392b; }
 
         .login-btn {
           display: flex;
@@ -347,27 +251,20 @@ export default function Login() {
           padding: 11px 16px;
           border-radius: 10px;
           font-weight: 600;
-          color: #06201c;
+          color: #ffffff;
           background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-          box-shadow: 0 0 20px rgba(94, 234, 212, 0.35);
+          box-shadow: 0 8px 20px -4px rgba(47, 143, 86, 0.45);
           border: none;
           cursor: pointer;
         }
         .login-btn:disabled { opacity: 0.7; cursor: default; }
 
-        .login-credit { color: var(--code-text); }
-        .login-credit span {
-          color: var(--text-accent);
-          text-shadow: 0 0 8px rgba(94, 234, 212, 0.4);
-        }
+        .login-credit { color: var(--text-muted); }
+        .login-credit span { color: var(--text-accent); }
 
         @keyframes glow-pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.6; }
-        }
-        @keyframes bunting-sway {
-          0%, 100% { transform: rotate(-6deg); }
-          50% { transform: rotate(6deg); }
         }
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
