@@ -34,6 +34,7 @@ import {
   UserCog,
   Award,
   Video,
+  Receipt,
 } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { supabase } from '../lib/supabaseClient'
@@ -73,6 +74,7 @@ const groupsAdmin = [
     label: 'Keuangan & Aset',
     links: [
       { to: '/keuangan', label: 'Keuangan', icon: Wallet },
+      { to: '/kuitansi', label: 'Kuitansi', icon: Receipt },
       { to: '/perpustakaan', label: 'Perpustakaan', icon: Library },
       { to: '/inventaris', label: 'Inventaris', icon: Boxes },
     ],
@@ -128,7 +130,7 @@ function NavItem({ to, label, icon: Icon, end }) {
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
           isActive
-            ? 'bg-gradient-to-r from-brass-500 to-brass-400 text-ink-950 shadow-sm shadow-black/20'
+            ? 'bg-gradient-to-r from-blue-500 to-indigo-400 text-white shadow-sm shadow-black/20'
             : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
         }`
       }
@@ -170,19 +172,19 @@ export default function Sidebar() {
   const namaTampil = profil?.nama_lengkap || session?.user?.email || 'Pengguna'
 
   return (
-    <aside className="w-64 shrink-0 bg-ink-950 text-white flex flex-col h-screen sticky top-0 border-r border-ink-900/50">
-      <div className="relative overflow-hidden px-4 py-5 border-b border-white/10 bg-gradient-to-br from-ink-950 via-ink-900 to-ink-800">
-        {/* Motif dedaunan dekoratif (senada dengan banner dashboard) */}
+    <aside className="w-64 shrink-0 bg-blue-950 text-white flex flex-col h-screen sticky top-0 border-r border-blue-900/50">
+      <div className="relative overflow-hidden px-4 py-5 border-b border-white/10 bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900">
+        {/* Motif batik dekoratif (senada dengan banner dashboard) */}
         <svg
           className="absolute inset-0 w-full h-full opacity-[0.35] pointer-events-none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
             <pattern id="batikSidebar" width="46" height="46" patternUnits="userSpaceOnUse">
-              <circle cx="23" cy="23" r="12" fill="none" stroke="#E8B33D" strokeWidth="1.4" />
-              <circle cx="23" cy="23" r="4" fill="none" stroke="#E8B33D" strokeWidth="1.4" />
-              <path d="M23 5 v8 M23 33 v8 M5 23 h8 M33 23 h8" stroke="#E8B33D" strokeWidth="1.4" />
-              <path d="M10 10 l4 4 M32 10 l-4 4 M10 36 l4 -4 M32 36 l-4 -4" stroke="#E8B33D" strokeWidth="1" />
+              <circle cx="23" cy="23" r="12" fill="none" stroke="#fbbf24" strokeWidth="1.4" />
+              <circle cx="23" cy="23" r="4" fill="none" stroke="#fbbf24" strokeWidth="1.4" />
+              <path d="M23 5 v8 M23 33 v8 M5 23 h8 M33 23 h8" stroke="#fbbf24" strokeWidth="1.4" />
+              <path d="M10 10 l4 4 M32 10 l-4 4 M10 36 l4 -4 M32 36 l-4 -4" stroke="#fbbf24" strokeWidth="1" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#batikSidebar)" />
@@ -196,7 +198,7 @@ export default function Sidebar() {
               className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/20"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brass-500 to-brass-400 flex items-center justify-center font-display font-bold text-ink-950 text-sm shrink-0 border-2 border-white/20">
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-400 flex items-center justify-center font-display font-bold text-white text-sm shrink-0 border-2 border-white/20">
               {getInisial(namaTampil)}
             </div>
           )}
@@ -214,8 +216,8 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="relative flex-1 overflow-y-auto py-4 px-3 bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
-        {/* Motif dedaunan area menu — gaya berbeda dari header (kawung/diamond, bukan lingkaran) */}
+      <nav className="relative flex-1 overflow-y-auto py-4 px-3 bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
+        {/* Motif batik area menu — gaya berbeda dari header (kawung/diamond, bukan lingkaran) */}
         <svg
           className="absolute inset-0 w-full h-full opacity-[0.22] pointer-events-none"
           xmlns="http://www.w3.org/2000/svg"
@@ -228,9 +230,9 @@ export default function Sidebar() {
               patternUnits="userSpaceOnUse"
               patternTransform="rotate(45)"
             >
-              <rect x="12" y="0" width="12" height="12" fill="none" stroke="#E8B33D" strokeWidth="1.2" />
-              <circle cx="18" cy="6" r="2.6" fill="#E8B33D" />
-              <path d="M0 18 L18 0 M18 36 L36 18" stroke="#E8B33D" strokeWidth="1" />
+              <rect x="12" y="0" width="12" height="12" fill="none" stroke="#fbbf24" strokeWidth="1.2" />
+              <circle cx="18" cy="6" r="2.6" fill="#fbbf24" />
+              <path d="M0 18 L18 0 M18 36 L36 18" stroke="#fbbf24" strokeWidth="1" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#batikMenu)" />
