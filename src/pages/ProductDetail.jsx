@@ -13,7 +13,7 @@ function ProductDetail() {
       setLoading(true)
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('*, product_images(url, sort_order)')
         .eq('id', id)
         .single()
 
@@ -32,18 +32,22 @@ function ProductDetail() {
   if (error) return <p style={{ padding: '16px', color: 'red' }}>Gagal memuat produk: {error}</p>
   if (!product) return <p style={{ padding: '16px' }}>Produk tidak ditemukan.</p>
 
+  const images = [...(product.product_images || [])].sort(
+    (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+  )
+
   return (
     <div style={{ padding: '16px', maxWidth: '600px' }}>
-      {product.image_url && (
+      {images[0]?.url && (
         <img
-          src={product.image_url}
+          src={images[0].url}
           alt={product.name}
           style={{ width: '100%', borderRadius: '8px' }}
         />
       )}
       <h2>{product.name}</h2>
       <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-        Rp {Number(product.price).toLocaleString('id-ID')}
+        Rp {Number(product.base_price).toLocaleString('id-ID')}
       </p>
       <p>{product.description}</p>
       {/* Nanti ditambah: tombol "Tambah ke Keranjang", info toko/penjual */}
