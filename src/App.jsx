@@ -8,6 +8,7 @@ import Register from './pages/Register'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
+import SellerDashboard from './pages/SellerDashboard'
 
 function Header() {
   const navigate = useNavigate()
@@ -39,6 +40,7 @@ function Header() {
       <nav style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         {user ? (
           <>
+            <Link to="/dashboard-penjualan">Dashboard Penjualan</Link>
             <Link to="/keranjang">Keranjang</Link>
             <span style={{ fontSize: '0.9rem' }}>{user.email}</span>
             <button onClick={handleLogout} style={{ cursor: 'pointer' }}>Keluar</button>
@@ -68,6 +70,7 @@ function App() {
           <Route path="/keranjang" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/pesanan-berhasil/:orderId" element={<OrderSuccess />} />
+          <Route path="/dashboard-penjualan" element={<SellerDashboard />} />
           {/* Nanti ditambah: /toko/:id */}
         </Routes>
       </main>
