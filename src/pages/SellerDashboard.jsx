@@ -98,6 +98,7 @@ function SellerDashboard() {
   const [deletingId, setDeletingId] = useState(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [deleteError, setDeleteError] = useState(null)
+  const [archiveNotice, setArchiveNotice] = useState(null)
 
   useEffect(() => {
     init()
@@ -297,18 +298,49 @@ function SellerDashboard() {
   async function handleDeleteProduct(productId) {
     setDeletingId(productId)
     setDeleteError(null)
+    setArchiveNotice(null)
 
     const { error } = await supabase.from('products').delete().eq('id', productId)
 
-    setDeletingId(null)
-    setConfirmDeleteId(null)
-
-    if (error) {
-      setDeleteError(error.message)
+    if (!error) {
+      setDeletingId(null)
+      setConfirmDeleteId(null)
+      setProducts((prev) => prev.filter((p) => p.id !== productId))
       return
     }
 
-    setProducts((prev) => prev.filter((p) => p.id !== productId))
+    // Kalau produk ini sudah pernah dipesan, hapus permanen akan gagal
+    // karena foreign key dari order_items. Alih-alih menampilkan error,
+    // arsipkan saja produknya (status = 'archived') supaya tidak lagi
+    // tampil di toko, tapi riwayat pesanan pelanggan tetap utuh.
+    const isForeignKeyError = error.code === '23503' || /foreign key/i.test(error.message)
+
+    if (isForeignKeyError) {
+      const { error: archiveError } = await supabase
+        .from('products')
+        .update({ status: 'archived' })
+        .eq('id', productId)
+
+      setDeletingId(null)
+      setConfirmDeleteId(null)
+
+      if (archiveError) {
+        setDeleteError(archiveError.message)
+        return
+      }
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, status: 'archived' } : p))
+      )
+      setArchiveNotice(
+        'Produk sudah pernah dipesan sehingga tidak bisa dihapus permanen. Produk sudah diarsipkan agar tidak tampil di toko — riwayat pesanan tetap aman.'
+      )
+      return
+    }
+
+    setDeletingId(null)
+    setConfirmDeleteId(null)
+    setDeleteError(error.message)
   }
 
   if (loading) {
@@ -520,6 +552,13 @@ function SellerDashboard() {
           Produk Saya
         </h3>
 
+        {archiveNotice && (
+          <p className="flex items-start gap-1.5 text-sm text-sage-500 mb-3">
+            <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
+            {archiveNotice}
+          </p>
+        )}
+
         {deleteError && (
           <p className="flex items-center gap-1.5 text-sm text-rose-500 mb-3">
             <AlertTriangle size={14} />
@@ -534,51 +573,65 @@ function SellerDashboard() {
           </div>
         ) : (
           <div className="rounded-2xl border border-ink-900/[0.06] bg-white shadow-sm divide-y divide-ink-900/[0.06]">
-            {products.map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-3 p-4">
-                <div className="min-w-0">
-                  <p className="font-medium text-ink-950 truncate">{p.name}</p>
-                  <p className="text-sm text-ink-700/60">
-                    Rp {Number(p.base_price).toLocaleString('id-ID')} ·{' '}
-                    <span className="capitalize">{p.status}</span> ·{' '}
-                    {(p.product_variants || []).length} varian
-                  </p>
-                </div>
-
-                {confirmDeleteId === p.id ? (
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs text-ink-700/60 hidden sm:inline">Hapus produk ini?</span>
-                    <button
-                      onClick={() => handleDeleteProduct(p.id)}
-                      disabled={deletingId === p.id}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-rose-500 text-white hover:bg-rose-600 transition-colors disabled:opacity-60"
-                    >
-                      {deletingId === p.id ? (
-                        <Loader2 size={12} className="animate-spin" />
+            {products.map((p) => {
+              const isArchived = p.status === 'archived'
+              return (
+                <div
+                  key={p.id}
+                  className={`flex items-center justify-between gap-3 p-4 ${isArchived ? 'opacity-60' : ''}`}
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-ink-950 truncate">{p.name}</p>
+                    <p className="text-sm text-ink-700/60">
+                      Rp {Number(p.base_price).toLocaleString('id-ID')} ·{' '}
+                      {isArchived ? (
+                        <span className="font-medium text-ink-700/70">Diarsipkan</span>
                       ) : (
-                        <Trash2 size={12} />
-                      )}
-                      Ya, hapus
-                    </button>
-                    <button
-                      onClick={() => setConfirmDeleteId(null)}
-                      disabled={deletingId === p.id}
-                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-ink-900/[0.1] text-ink-700 hover:bg-ink-900/[0.03] transition-colors"
-                    >
-                      Batal
-                    </button>
+                        <span className="capitalize">{p.status}</span>
+                      )}{' '}
+                      · {(p.product_variants || []).length} varian
+                    </p>
                   </div>
-                ) : (
-                  <button
-                    onClick={() => setConfirmDeleteId(p.id)}
-                    title="Hapus produk"
-                    className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-ink-700/50 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
-              </div>
-            ))}
+
+                  {isArchived ? (
+                    <span className="shrink-0 text-xs font-medium px-2.5 py-1 rounded-md bg-ink-900/[0.06] text-ink-700/60">
+                      Tidak tampil di toko
+                    </span>
+                  ) : confirmDeleteId === p.id ? (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-ink-700/60 hidden sm:inline">Hapus produk ini?</span>
+                      <button
+                        onClick={() => handleDeleteProduct(p.id)}
+                        disabled={deletingId === p.id}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-rose-500 text-white hover:bg-rose-600 transition-colors disabled:opacity-60"
+                      >
+                        {deletingId === p.id ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : (
+                          <Trash2 size={12} />
+                        )}
+                        Ya, hapus
+                      </button>
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        disabled={deletingId === p.id}
+                        className="text-xs font-medium px-3 py-1.5 rounded-lg border border-ink-900/[0.1] text-ink-700 hover:bg-ink-900/[0.03] transition-colors"
+                      >
+                        Batal
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDeleteId(p.id)}
+                      title="Hapus produk"
+                      className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-ink-700/50 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
