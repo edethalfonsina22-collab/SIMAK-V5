@@ -1,58 +1,54 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
-function Home() {
-  const [products, setProducts] = useState([])
+function ProductDetail() {
+  const { id } = useParams()
+  const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchProduct() {
       setLoading(true)
       const { data, error } = await supabase
-        .from('products') // sesuaikan nama tabel dengan schema_marketplace.sql kamu
+        .from('products')
         .select('*')
-        .order('created_at', { ascending: false })
+        .eq('id', id)
+        .single()
 
       if (error) {
         setError(error.message)
       } else {
-        setProducts(data)
+        setProduct(data)
       }
       setLoading(false)
     }
 
-    fetchProducts()
-  }, [])
+    fetchProduct()
+  }, [id])
 
-  if (loading) return <p style={{ padding: '16px' }}>Memuat produk...</p>
+  if (loading) return <p style={{ padding: '16px' }}>Memuat...</p>
   if (error) return <p style={{ padding: '16px', color: 'red' }}>Gagal memuat produk: {error}</p>
-  if (products.length === 0) return <p style={{ padding: '16px' }}>Belum ada produk.</p>
+  if (!product) return <p style={{ padding: '16px' }}>Produk tidak ditemukan.</p>
 
   return (
-    <div style={{ padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-      {products.map((product) => (
-        <Link
-          key={product.id}
-          to={`/produk/${product.id}`}
-          style={{ textDecoration: 'none', color: 'inherit', border: '1px solid #eee', borderRadius: '8px', padding: '12px' }}
-        >
-          {product.image_url && (
-            <img
-              src={product.image_url}
-              alt={product.name}
-              style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '6px' }}
-            />
-          )}
-          <h3 style={{ fontSize: '1rem', margin: '8px 0 4px' }}>{product.name}</h3>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>
-            Rp {Number(product.price).toLocaleString('id-ID')}
-          </p>
-        </Link>
-      ))}
+    <div style={{ padding: '16px', maxWidth: '600px' }}>
+      {product.image_url && (
+        <img
+          src={product.image_url}
+          alt={product.name}
+          style={{ width: '100%', borderRadius: '8px' }}
+        />
+      )}
+      <h2>{product.name}</h2>
+      <p style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+        Rp {Number(product.price).toLocaleString('id-ID')}
+      </p>
+      <p>{product.description}</p>
+      {/* Nanti ditambah: tombol "Tambah ke Keranjang", info toko/penjual */}
     </div>
   )
 }
 
-export default Home
+export default ProductDetail
