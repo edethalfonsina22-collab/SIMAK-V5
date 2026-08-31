@@ -45,24 +45,81 @@ const groupsAdmin = [
     label: null, // tanpa judul grup — selalu di atas
     links: [
       { to: '/', label: 'Dasbor', icon: LayoutDashboard, end: true },
+      { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
+      { to: '/rapat', label: 'Rapat Video', icon: Video },
+      { to: '/galeri', label: 'Galeri Kegiatan', icon: Images },
+      { to: '/dokumen', label: 'Dokumen Penting', icon: HardDrive },
+      { to: '/pengumuman', label: 'Pengumuman', icon: Megaphone },
     ],
   },
   {
     label: 'Akademik',
     links: [
+      { to: '/siswa', label: 'Data Siswa', icon: Users },
+      { to: '/guru', label: 'Data Guru', icon: GraduationCap },
+      { to: '/kelas', label: 'Kelas', icon: DoorOpen },
+      { to: '/jadwal', label: 'Jadwal Pelajaran', icon: CalendarClock },
+      { to: '/presensi', label: 'Presensi', icon: ClipboardCheck },
+      { to: '/nilai', label: 'Nilai Siswa', icon: BookOpenCheck },
+      { to: '/rapor', label: 'Rapor Siswa', icon: FileBadge },
+      { to: '/rpp', label: 'RPP', icon: NotebookPen },
+      { to: '/arsip-rpp', label: 'Arsip RPP', icon: Archive },
+      { to: '/sertifikat', label: 'Sertifikat & Penghargaan', icon: Award },
+      { to: '/buat-ujian', label: 'Buat Ujian', icon: FilePlus },
+      { to: '/hasil-ujian', label: 'Hasil Ujian', icon: ClipboardList },
+      { to: '/bank-soal', label: 'Bank Soal', icon: Database },
     ],
   },
   {
     label: 'Keuangan & Aset',
     links: [
+      { to: '/keuangan', label: 'Keuangan', icon: Wallet },
+      { to: '/kuitansi', label: 'Kuitansi', icon: Receipt },
+      { to: '/perpustakaan', label: 'Perpustakaan', icon: Library },
+      { to: '/inventaris', label: 'Inventaris', icon: Boxes },
     ],
   },
   {
     label: 'Administrasi',
     links: [
+      { to: '/pengajuan-surat-aktif', label: 'Pengajuan Surat Aktif', icon: FileCheck2 },
+      { to: '/perbaikan-data-siswa', label: 'Perbaikan Data Siswa', icon: UserCog },
+      { to: '/agenda', label: 'Agenda Sekolah', icon: CalendarDays },
+      { to: '/surat', label: 'Surat Masuk/Keluar', icon: Mail },
+      { to: '/surat-keterangan', label: 'Surat Keterangan', icon: FileSignature },
+      { to: '/ppdb-admin', label: 'PPDB Siswa Baru', icon: UserPlus },
+      { to: '/laporan', label: 'Laporan Bulanan', icon: FileText },
+      { to: '/hari-libur', label: 'Hari Libur', icon: CalendarOff },
+      { to: '/backup', label: 'Backup Data', icon: DatabaseBackup },
+      { to: '/profil-sekolah', label: 'Profil Sekolah', icon: Landmark },
+      { to: '/kartu', label: 'Cetak Kartu', icon: IdCard },
     ],
   },
 ]
+
+// Menu GURU: tetap ringkas, tidak perlu dikelompokkan
+const linksGuru = [
+  { to: '/', label: 'Dasbor', icon: LayoutDashboard, end: true },
+  { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
+  { to: '/rapat', label: 'Rapat Video', icon: Video },
+  { to: '/galeri', label: 'Galeri Kegiatan', icon: Images },
+  { to: '/dokumen', label: 'Dokumen Penting', icon: HardDrive },
+  { to: '/siswa', label: 'Data Siswa', icon: Users },
+  { to: '/presensi', label: 'Presensi', icon: ClipboardCheck },
+  { to: '/nilai', label: 'Nilai Siswa', icon: BookOpenCheck },
+  { to: '/rapor', label: 'Rapor Siswa', icon: FileBadge },
+  { to: '/rpp', label: 'RPP', icon: NotebookPen },
+  { to: '/arsip-rpp', label: 'Arsip RPP', icon: Archive },
+  { to: '/sertifikat', label: 'Sertifikat & Penghargaan', icon: Award },
+  { to: '/pengajuan-surat-aktif', label: 'Pengajuan Surat Aktif', icon: FileCheck2 },
+  { to: '/perbaikan-data-siswa', label: 'Perbaikan Data Siswa', icon: UserCog },
+  { to: '/buat-ujian', label: 'Buat Ujian', icon: FilePlus },
+  { to: '/hasil-ujian', label: 'Hasil Ujian', icon: ClipboardList },
+  { to: '/bank-soal', label: 'Bank Soal', icon: Database },
+  { to: '/perpustakaan', label: 'Perpustakaan', icon: Library },
+  { to: '/jadwal', label: 'Jadwal Pelajaran', icon: CalendarClock },
+  { to: '/agenda', label: 'Agenda Sekolah', icon: CalendarDays },
+  { to: '/pengumuman', label: 'Pengumuman', icon: Megaphone },
 ]
 
 function NavItem({ to, label, icon: Icon, end }) {
