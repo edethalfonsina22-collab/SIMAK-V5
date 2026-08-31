@@ -7,8 +7,6 @@ import Sidebar from './Sidebar'
 const notifikasiContoh = [
   {
     id: 1,
-    judul: 'Pengajuan surat aktif baru',
-    deskripsi: 'Ada 1 pengajuan surat aktif menunggu persetujuan Anda.',
     waktu: '10 menit lalu',
     dibaca: false,
   },
@@ -19,15 +17,7 @@ const notifikasiContoh = [
     waktu: '2 jam lalu',
     dibaca: false,
   },
-  {
-    id: 3,
-    judul: 'Dokumen penting diunggah',
-    deskripsi: 'Dokumen baru telah ditambahkan ke arsip sekolah.',
-    waktu: 'Kemarin',
-    dibaca: true,
-  },
-]
-
+  {    id: 3,
 function NotificationBell() {
   const [open, setOpen] = useState(false)
   const [notifikasi, setNotifikasi] = useState(notifikasiContoh)
