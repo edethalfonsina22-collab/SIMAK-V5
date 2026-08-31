@@ -5,6 +5,9 @@ import Home from './pages/Home'
 import ProductDetail from './pages/ProductDetail'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
+import OrderSuccess from './pages/OrderSuccess'
 
 function Header() {
   const navigate = useNavigate()
@@ -36,6 +39,7 @@ function Header() {
       <nav style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         {user ? (
           <>
+            <Link to="/keranjang">Keranjang</Link>
             <span style={{ fontSize: '0.9rem' }}>{user.email}</span>
             <button onClick={handleLogout} style={{ cursor: 'pointer' }}>Keluar</button>
           </>
@@ -61,7 +65,10 @@ function App() {
           <Route path="/produk/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* Nanti ditambah: /toko/:id, /keranjang, /checkout */}
+          <Route path="/keranjang" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/pesanan-berhasil/:orderId" element={<OrderSuccess />} />
+          {/* Nanti ditambah: /toko/:id */}
         </Routes>
       </main>
     </BrowserRouter>
