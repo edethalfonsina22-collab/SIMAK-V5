@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import {
   Store, Package, ShoppingBag, Wallet, Trash2, PlusCircle,
-  AlertTriangle, CheckCircle2, Loader2, Boxes, Inbox,
+  AlertTriangle, CheckCircle2, Loader2, Boxes, Inbox, ImagePlus, X,
 } from 'lucide-react'
 
 function slugify(text) {
@@ -54,10 +54,45 @@ function SellerDashboard() {
     size: '',
     color: '',
     stock: '',
-    image_url: '',
   })
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
   const [savingProduct, setSavingProduct] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [productMessage, setProductMessage] = useState(null)
+
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+  const MAX_IMAGE_SIZE_MB = 5
+
+  function handleImageChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) {
+      setImageFile(null)
+      setImagePreview(null)
+      return
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setProductMessage({ type: 'error', text: 'Format gambar harus JPG, PNG, atau WEBP.' })
+      e.target.value = ''
+      return
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+      setProductMessage({ type: 'error', text: `Ukuran gambar maksimal ${MAX_IMAGE_SIZE_MB}MB.` })
+      e.target.value = ''
+      return
+    }
+
+    setProductMessage(null)
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null)
+    setImagePreview(null)
+  }
 
   // hapus produk
   const [deletingId, setDeletingId] = useState(null)
@@ -206,13 +241,35 @@ function SellerDashboard() {
       }
     }
 
-    // 3. Insert gambar (opsional)
-    if (form.image_url) {
+    // 3. Upload gambar ke Supabase Storage (opsional)
+    if (imageFile) {
+      setUploadingImage(true)
+
+      const fileExt = imageFile.name.split('.').pop()
+      const filePath = `${store.id}/${product.id}-${Date.now()}.${fileExt}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, imageFile)
+
+      if (uploadError) {
+        setUploadingImage(false)
+        setProductMessage({ type: 'error', text: `Gagal upload gambar: ${uploadError.message}` })
+        setSavingProduct(false)
+        return
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath)
+
       const { error: imageError } = await supabase.from('product_images').insert({
         product_id: product.id,
-        url: form.image_url,
+        url: publicUrlData.publicUrl,
         sort_order: 1,
       })
+
+      setUploadingImage(false)
 
       if (imageError) {
         setProductMessage({ type: 'error', text: imageError.message })
@@ -230,8 +287,9 @@ function SellerDashboard() {
       size: '',
       color: '',
       stock: '',
-      image_url: '',
     })
+    setImageFile(null)
+    setImagePreview(null)
     setSavingProduct(false)
     loadProducts(store.id)
   }
@@ -395,13 +453,36 @@ function SellerDashboard() {
             />
           </div>
 
-          <input
-            type="text"
-            placeholder="URL gambar produk"
-            value={form.image_url}
-            onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-            className={inputClass}
-          />
+          <div>
+            <label className="block text-xs font-medium text-ink-700/70 mb-1.5">
+              Gambar produk (JPG, PNG, atau WEBP, maks {MAX_IMAGE_SIZE_MB}MB)
+            </label>
+
+            {imagePreview ? (
+              <div className="relative w-28 h-28 rounded-lg overflow-hidden border border-ink-900/[0.1]">
+                <img src={imagePreview} alt="Pratinjau" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-ink-950/70 text-white flex items-center justify-center hover:bg-ink-950 transition-colors"
+                  title="Hapus gambar"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center gap-1.5 w-28 h-28 rounded-lg border border-dashed border-ink-900/[0.15] text-ink-700/50 hover:border-brass-400 hover:text-brass-500 cursor-pointer transition-colors">
+                <ImagePlus size={20} />
+                <span className="text-[11px]">Pilih gambar</span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
 
           {productMessage && (
             <p
@@ -424,7 +505,11 @@ function SellerDashboard() {
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-ink-950 text-white text-sm font-medium hover:bg-ink-900 transition-colors disabled:opacity-60"
           >
             {savingProduct && <Loader2 size={14} className="animate-spin" />}
-            {savingProduct ? 'Menyimpan...' : 'Tambah Produk'}
+            {savingProduct
+              ? uploadingImage
+                ? 'Mengunggah gambar...'
+                : 'Menyimpan...'
+              : 'Tambah Produk'}
           </button>
         </form>
       </div>
