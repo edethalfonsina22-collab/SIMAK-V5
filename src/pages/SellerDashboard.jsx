@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import {
+  Store, Package, ShoppingBag, Wallet, Trash2, PlusCircle,
+  AlertTriangle, CheckCircle2, Loader2, Boxes, Inbox,
+} from 'lucide-react'
 
 function slugify(text) {
   return text
@@ -8,6 +12,23 @@ function slugify(text) {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '')
+}
+
+const inputClass =
+  'w-full px-3 py-2 rounded-lg border border-ink-900/[0.1] bg-white text-sm text-ink-950 placeholder:text-ink-700/40 focus:outline-none focus:ring-2 focus:ring-brass-400/40 focus:border-brass-400 transition-colors'
+
+function StatCard({ icon: Icon, label, value }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-ink-900/[0.06] bg-white p-4 shadow-sm">
+      <div className="w-10 h-10 rounded-full bg-brass-400/15 text-brass-600 flex items-center justify-center shrink-0">
+        <Icon size={18} />
+      </div>
+      <div>
+        <p className="text-xs text-ink-700/60">{label}</p>
+        <p className="font-display font-bold text-lg text-ink-950">{value}</p>
+      </div>
+    </div>
+  )
 }
 
 function SellerDashboard() {
@@ -37,6 +58,11 @@ function SellerDashboard() {
   })
   const [savingProduct, setSavingProduct] = useState(false)
   const [productMessage, setProductMessage] = useState(null)
+
+  // hapus produk
+  const [deletingId, setDeletingId] = useState(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [deleteError, setDeleteError] = useState(null)
 
   useEffect(() => {
     init()
@@ -210,37 +236,81 @@ function SellerDashboard() {
     loadProducts(store.id)
   }
 
-  if (loading) return <p style={{ padding: '16px' }}>Memuat dashboard...</p>
-  if (error) return <p style={{ padding: '16px', color: 'red' }}>{error}</p>
+  async function handleDeleteProduct(productId) {
+    setDeletingId(productId)
+    setDeleteError(null)
+
+    const { error } = await supabase.from('products').delete().eq('id', productId)
+
+    setDeletingId(null)
+    setConfirmDeleteId(null)
+
+    if (error) {
+      setDeleteError(error.message)
+      return
+    }
+
+    setProducts((prev) => prev.filter((p) => p.id !== productId))
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 p-6 text-sm text-ink-700/60">
+        <Loader2 size={16} className="animate-spin" />
+        Memuat dashboard...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center gap-2 p-6 text-sm text-rose-500">
+        <AlertTriangle size={16} />
+        {error}
+      </div>
+    )
+  }
 
   if (!profile || profile.role !== 'seller') {
     return (
-      <div style={{ padding: '16px' }}>
-        <h2>Dashboard Penjualan</h2>
-        <p>Halaman ini khusus untuk akun dengan peran "Penjual".</p>
+      <div className="p-6 max-w-md">
+        <h2 className="font-display text-xl font-semibold text-ink-950 mb-2">Dashboard Penjualan</h2>
+        <p className="text-sm text-ink-700/70">Halaman ini khusus untuk akun dengan peran "Penjual".</p>
       </div>
     )
   }
 
   if (!store) {
     return (
-      <div style={{ padding: '16px', maxWidth: '400px' }}>
-        <h2>Buat Toko Kamu</h2>
-        <p>Kamu belum punya toko. Buat dulu sebelum bisa menambahkan produk.</p>
-        <form onSubmit={handleCreateStore} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <input
-            type="text"
-            placeholder="Nama toko"
-            value={storeName}
-            onChange={(e) => setStoreName(e.target.value)}
-            required
-            style={{ padding: '8px' }}
-          />
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button type="submit" disabled={savingStore} style={{ padding: '10px', cursor: 'pointer' }}>
-            {savingStore ? 'Menyimpan...' : 'Buat Toko'}
-          </button>
-        </form>
+      <div className="p-6 max-w-sm mx-auto">
+        <div className="rounded-2xl border border-ink-900/[0.06] bg-white shadow-sm p-6">
+          <div className="w-11 h-11 rounded-full bg-brass-400/15 text-brass-600 flex items-center justify-center mb-4">
+            <Store size={20} />
+          </div>
+          <h2 className="font-display text-lg font-semibold text-ink-950 mb-1">Buat Toko Kamu</h2>
+          <p className="text-sm text-ink-700/70 mb-4">
+            Kamu belum punya toko. Buat dulu sebelum bisa menambahkan produk.
+          </p>
+          <form onSubmit={handleCreateStore} className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder="Nama toko"
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
+              required
+              className={inputClass}
+            />
+            {error && <p className="text-sm text-rose-500">{error}</p>}
+            <button
+              type="submit"
+              disabled={savingStore}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-ink-950 text-white text-sm font-medium hover:bg-ink-900 transition-colors disabled:opacity-60"
+            >
+              {savingStore && <Loader2 size={14} className="animate-spin" />}
+              {savingStore ? 'Menyimpan...' : 'Buat Toko'}
+            </button>
+          </form>
+        </div>
       </div>
     )
   }
@@ -248,141 +318,226 @@ function SellerDashboard() {
   const totalPenjualan = subOrders.reduce((sum, so) => sum + Number(so.subtotal), 0)
 
   return (
-    <div style={{ padding: '16px', maxWidth: '800px' }}>
-      <h2>Dashboard Penjualan — {store.name}</h2>
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <h2 className="font-display text-xl font-semibold text-ink-950 mb-4">
+        Dashboard Penjualan — {store.name}
+      </h2>
 
-      <div style={{ display: 'flex', gap: '24px', margin: '16px 0', flexWrap: 'wrap' }}>
-        <div style={{ border: '1px solid #eee', borderRadius: '8px', padding: '12px 20px' }}>
-          <p style={{ margin: 0, color: '#888', fontSize: '0.85rem' }}>Total Produk</p>
-          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1.3rem' }}>{products.length}</p>
-        </div>
-        <div style={{ border: '1px solid #eee', borderRadius: '8px', padding: '12px 20px' }}>
-          <p style={{ margin: 0, color: '#888', fontSize: '0.85rem' }}>Total Pesanan Masuk</p>
-          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1.3rem' }}>{subOrders.length}</p>
-        </div>
-        <div style={{ border: '1px solid #eee', borderRadius: '8px', padding: '12px 20px' }}>
-          <p style={{ margin: 0, color: '#888', fontSize: '0.85rem' }}>Total Nilai Penjualan</p>
-          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '1.3rem' }}>
-            Rp {Number(totalPenjualan).toLocaleString('id-ID')}
-          </p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <StatCard icon={Package} label="Total Produk" value={products.length} />
+        <StatCard icon={ShoppingBag} label="Total Pesanan Masuk" value={subOrders.length} />
+        <StatCard
+          icon={Wallet}
+          label="Total Nilai Penjualan"
+          value={`Rp ${Number(totalPenjualan).toLocaleString('id-ID')}`}
+        />
       </div>
 
-      <h3>Tambah Produk Baru</h3>
-      <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '400px' }}>
-        <input
-          type="text"
-          placeholder="Nama produk"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          style={{ padding: '8px' }}
-        />
-        <textarea
-          placeholder="Deskripsi"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          style={{ padding: '8px' }}
-          rows={3}
-        />
-        <input
-          type="number"
-          placeholder="Harga (Rp)"
-          value={form.base_price}
-          onChange={(e) => setForm({ ...form, base_price: e.target.value })}
-          style={{ padding: '8px' }}
-        />
-        <select
-          value={form.category_id}
-          onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-          style={{ padding: '8px' }}
-        >
-          <option value="">Pilih kategori</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="rounded-2xl border border-ink-900/[0.06] bg-white shadow-sm p-5 mb-8">
+        <h3 className="font-display text-base font-semibold text-ink-950 mb-4 flex items-center gap-2">
+          <PlusCircle size={18} className="text-brass-500" />
+          Tambah Produk Baru
+        </h3>
+        <form onSubmit={handleAddProduct} className="flex flex-col gap-3 max-w-md">
           <input
             type="text"
-            placeholder="Ukuran (misal M)"
-            value={form.size}
-            onChange={(e) => setForm({ ...form, size: e.target.value })}
-            style={{ padding: '8px', flex: 1 }}
+            placeholder="Nama produk"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className={inputClass}
           />
-          <input
-            type="text"
-            placeholder="Warna"
-            value={form.color}
-            onChange={(e) => setForm({ ...form, color: e.target.value })}
-            style={{ padding: '8px', flex: 1 }}
+          <textarea
+            placeholder="Deskripsi"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            rows={3}
+            className={inputClass}
           />
           <input
             type="number"
-            placeholder="Stok"
-            value={form.stock}
-            onChange={(e) => setForm({ ...form, stock: e.target.value })}
-            style={{ padding: '8px', flex: 1 }}
+            placeholder="Harga (Rp)"
+            value={form.base_price}
+            onChange={(e) => setForm({ ...form, base_price: e.target.value })}
+            className={inputClass}
           />
-        </div>
+          <select
+            value={form.category_id}
+            onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+            className={inputClass}
+          >
+            <option value="">Pilih kategori</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
 
-        <input
-          type="text"
-          placeholder="URL gambar produk"
-          value={form.image_url}
-          onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-          style={{ padding: '8px' }}
-        />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Ukuran (misal M)"
+              value={form.size}
+              onChange={(e) => setForm({ ...form, size: e.target.value })}
+              className={`${inputClass} flex-1`}
+            />
+            <input
+              type="text"
+              placeholder="Warna"
+              value={form.color}
+              onChange={(e) => setForm({ ...form, color: e.target.value })}
+              className={`${inputClass} flex-1`}
+            />
+            <input
+              type="number"
+              placeholder="Stok"
+              value={form.stock}
+              onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              className={`${inputClass} flex-1`}
+            />
+          </div>
 
-        {productMessage && (
-          <p style={{ color: productMessage.type === 'error' ? 'red' : 'green', margin: 0 }}>
-            {productMessage.text}
+          <input
+            type="text"
+            placeholder="URL gambar produk"
+            value={form.image_url}
+            onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+            className={inputClass}
+          />
+
+          {productMessage && (
+            <p
+              className={`flex items-center gap-1.5 text-sm ${
+                productMessage.type === 'error' ? 'text-rose-500' : 'text-sage-500'
+              }`}
+            >
+              {productMessage.type === 'error' ? (
+                <AlertTriangle size={14} />
+              ) : (
+                <CheckCircle2 size={14} />
+              )}
+              {productMessage.text}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={savingProduct}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-ink-950 text-white text-sm font-medium hover:bg-ink-900 transition-colors disabled:opacity-60"
+          >
+            {savingProduct && <Loader2 size={14} className="animate-spin" />}
+            {savingProduct ? 'Menyimpan...' : 'Tambah Produk'}
+          </button>
+        </form>
+      </div>
+
+      <div className="mb-8">
+        <h3 className="font-display text-base font-semibold text-ink-950 mb-3 flex items-center gap-2">
+          <Boxes size={18} className="text-brass-500" />
+          Produk Saya
+        </h3>
+
+        {deleteError && (
+          <p className="flex items-center gap-1.5 text-sm text-rose-500 mb-3">
+            <AlertTriangle size={14} />
+            Gagal menghapus produk: {deleteError}
           </p>
         )}
 
-        <button type="submit" disabled={savingProduct} style={{ padding: '10px', cursor: 'pointer' }}>
-          {savingProduct ? 'Menyimpan...' : 'Tambah Produk'}
-        </button>
-      </form>
-
-      <h3 style={{ marginTop: '32px' }}>Produk Saya</h3>
-      {products.length === 0 ? (
-        <p>Belum ada produk.</p>
-      ) : (
-        products.map((p) => (
-          <div key={p.id} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}>
-            <strong>{p.name}</strong> — Rp {Number(p.base_price).toLocaleString('id-ID')} — {p.status}
-            <div style={{ fontSize: '0.85rem', color: '#888' }}>
-              {(p.product_variants || []).length} varian
-            </div>
+        {products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center py-10 gap-2 rounded-xl border border-dashed border-ink-900/[0.1]">
+            <Inbox size={26} className="text-ink-700/30" />
+            <p className="text-sm text-ink-700/50">Belum ada produk.</p>
           </div>
-        ))
-      )}
+        ) : (
+          <div className="rounded-2xl border border-ink-900/[0.06] bg-white shadow-sm divide-y divide-ink-900/[0.06]">
+            {products.map((p) => (
+              <div key={p.id} className="flex items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink-950 truncate">{p.name}</p>
+                  <p className="text-sm text-ink-700/60">
+                    Rp {Number(p.base_price).toLocaleString('id-ID')} ·{' '}
+                    <span className="capitalize">{p.status}</span> ·{' '}
+                    {(p.product_variants || []).length} varian
+                  </p>
+                </div>
 
-      <h3 style={{ marginTop: '32px' }}>Pesanan Masuk</h3>
-      {subOrders.length === 0 ? (
-        <p>Belum ada pesanan masuk.</p>
-      ) : (
-        subOrders.map((so) => (
-          <div key={so.id} style={{ border: '1px solid #eee', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong>{so.orders?.order_number}</strong>
-              <span>{so.fulfillment_status}</span>
-            </div>
-            <p style={{ margin: '4px 0', fontSize: '0.85rem', color: '#888' }}>
-              Status pembayaran: {so.orders?.payment_status}
-            </p>
-            {(so.order_items || []).map((oi) => (
-              <p key={oi.id} style={{ margin: '2px 0', fontSize: '0.9rem' }}>
-                {oi.product_name} ({oi.variant_label}) x{oi.quantity} — Rp {Number(oi.unit_price * oi.quantity).toLocaleString('id-ID')}
-              </p>
+                {confirmDeleteId === p.id ? (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-ink-700/60 hidden sm:inline">Hapus produk ini?</span>
+                    <button
+                      onClick={() => handleDeleteProduct(p.id)}
+                      disabled={deletingId === p.id}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-rose-500 text-white hover:bg-rose-600 transition-colors disabled:opacity-60"
+                    >
+                      {deletingId === p.id ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={12} />
+                      )}
+                      Ya, hapus
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      disabled={deletingId === p.id}
+                      className="text-xs font-medium px-3 py-1.5 rounded-lg border border-ink-900/[0.1] text-ink-700 hover:bg-ink-900/[0.03] transition-colors"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(p.id)}
+                    title="Hapus produk"
+                    className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg text-ink-700/50 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
             ))}
-            <p style={{ fontWeight: 'bold', marginTop: '6px' }}>
-              Subtotal: Rp {Number(so.subtotal).toLocaleString('id-ID')}
-            </p>
           </div>
-        ))
-      )}
+        )}
+      </div>
+
+      <div>
+        <h3 className="font-display text-base font-semibold text-ink-950 mb-3 flex items-center gap-2">
+          <ShoppingBag size={18} className="text-brass-500" />
+          Pesanan Masuk
+        </h3>
+
+        {subOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center py-10 gap-2 rounded-xl border border-dashed border-ink-900/[0.1]">
+            <Inbox size={26} className="text-ink-700/30" />
+            <p className="text-sm text-ink-700/50">Belum ada pesanan masuk.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {subOrders.map((so) => (
+              <div key={so.id} className="rounded-xl border border-ink-900/[0.06] bg-white shadow-sm p-4">
+                <div className="flex items-center justify-between">
+                  <strong className="text-ink-950">{so.orders?.order_number}</strong>
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-ink-900/[0.06] text-ink-700 capitalize">
+                    {so.fulfillment_status}
+                  </span>
+                </div>
+                <p className="text-sm text-ink-700/60 mt-1">
+                  Status pembayaran: <span className="capitalize">{so.orders?.payment_status}</span>
+                </p>
+                <div className="mt-2 space-y-1">
+                  {(so.order_items || []).map((oi) => (
+                    <p key={oi.id} className="text-sm text-ink-700">
+                      {oi.product_name} ({oi.variant_label}) x{oi.quantity} — Rp{' '}
+                      {Number(oi.unit_price * oi.quantity).toLocaleString('id-ID')}
+                    </p>
+                  ))}
+                </div>
+                <p className="font-display font-bold text-ink-950 mt-3">
+                  Subtotal: Rp {Number(so.subtotal).toLocaleString('id-ID')}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
