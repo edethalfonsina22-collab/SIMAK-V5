@@ -9,12 +9,29 @@ function generateOrderNumber() {
   return `ORD-${stamp}-${random}`
 }
 
+// Muat script Snap.js Midtrans sekali saja, lalu buka popup pembayaran.
+function loadSnapScript() {
+  return new Promise((resolve, reject) => {
+    if (window.snap) {
+      resolve()
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://app.sandbox.midtrans.com/snap/snap.js' // sandbox
+    script.setAttribute('data-client-key', import.meta.env.VITE_MIDTRANS_CLIENT_KEY)
+    script.onload = resolve
+    script.onerror = reject
+    document.body.appendChild(script)
+  })
+}
+
 function Checkout() {
   const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [placingOrder, setPlacingOrder] = useState(false)
+  const [statusText, setStatusText] = useState('')
 
   useEffect(() => {
     async function fetchCart() {
@@ -65,18 +82,21 @@ function Checkout() {
   async function handlePlaceOrder() {
     setPlacingOrder(true)
     setError(null)
+    setStatusText('Membuat pesanan...')
 
     const { data: sessionData } = await supabase.auth.getSession()
     const userId = sessionData.session.user.id
+    const userEmail = sessionData.session.user.email
 
     const total = items.reduce((sum, item) => sum + priceOf(item) * item.quantity, 0)
+    const orderNumber = generateOrderNumber()
 
     // 1. Buat order utama
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         buyer_id: userId,
-        order_number: generateOrderNumber(),
+        order_number: orderNumber,
         total_amount: total,
       })
       .select()
@@ -142,8 +162,55 @@ function Checkout() {
     const cartItemIds = items.map((item) => item.id)
     await supabase.from('cart_items').delete().in('id', cartItemIds)
 
-    setPlacingOrder(false)
-    navigate(`/pesanan-berhasil/${order.id}`)
+    // 5. Minta Snap token dari serverless function, lalu buka popup pembayaran
+    setStatusText('Menyiapkan pembayaran...')
+
+    try {
+      await loadSnapScript()
+
+      const response = await fetch('/api/create-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderNumber,
+          gross_amount: total,
+          customer_name: userEmail,
+          customer_email: userEmail,
+          items: items.map((item) => ({
+            id: item.product_variants.id,
+            price: priceOf(item),
+            quantity: item.quantity,
+            name: item.product_variants.products.name.slice(0, 50),
+          })),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Gagal menyiapkan pembayaran.')
+        setPlacingOrder(false)
+        // Order tetap dibuat dengan status pending, jadi tetap arahkan ke halaman pesanan
+        navigate(`/pesanan-berhasil/${order.id}`)
+        return
+      }
+
+      setPlacingOrder(false)
+
+      window.snap.pay(data.token, {
+        onSuccess: () => navigate(`/pesanan-berhasil/${order.id}`),
+        onPending: () => navigate(`/pesanan-berhasil/${order.id}`),
+        onError: () => {
+          setError('Pembayaran gagal. Kamu bisa coba bayar lagi nanti dari halaman pesanan.')
+          navigate(`/pesanan-berhasil/${order.id}`)
+        },
+        onClose: () => navigate(`/pesanan-berhasil/${order.id}`),
+      })
+    } catch (err) {
+      setError('Gagal memuat sistem pembayaran: ' + err.message)
+      setPlacingOrder(false)
+      navigate(`/pesanan-berhasil/${order.id}`)
+    }
   }
 
   if (loading) return <p style={{ padding: '16px' }}>Memuat checkout...</p>
@@ -173,17 +240,14 @@ function Checkout() {
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '12px' }}>
-        Pembayaran online (Midtrans) belum terhubung — order akan dibuat dengan status "pending" dulu.
-      </p>
+      {statusText && placingOrder && <p style={{ color: '#888' }}>{statusText}</p>}
 
       <button
         onClick={handlePlaceOrder}
         disabled={placingOrder}
         style={{ marginTop: '12px', padding: '12px 20px', cursor: 'pointer', width: '100%' }}
       >
-        {placingOrder ? 'Memproses...' : 'Buat Pesanan'}
+        {placingOrder ? 'Memproses...' : 'Buat Pesanan & Bayar'}
       </button>
     </div>
   )
