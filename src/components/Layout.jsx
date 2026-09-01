@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
 import { Bell } from 'lucide-react'
 import Sidebar from './Sidebar'
 
@@ -7,22 +8,22 @@ import Sidebar from './Sidebar'
 const notifikasiContoh = [
   {
     id: 1,
-    judul: 'Pesanan baru masuk',
-    deskripsi: 'Ada 1 pesanan baru menunggu diproses.',
+    judul: 'Pengajuan surat aktif baru',
+    deskripsi: 'Ada 1 pengajuan surat aktif menunggu persetujuan Anda.',
     waktu: '10 menit lalu',
     dibaca: false,
   },
   {
     id: 2,
-    judul: 'Promo baru diterbitkan',
-    deskripsi: '"Diskon Akhir Bulan" baru saja ditambahkan ke halaman toko.',
+    judul: 'Pengumuman baru diterbitkan',
+    deskripsi: '"Info penting" baru saja ditambahkan ke daftar pengumuman.',
     waktu: '2 jam lalu',
     dibaca: false,
   },
   {
     id: 3,
-    judul: 'Stok produk menipis',
-    deskripsi: 'Beberapa produk hampir habis, segera lakukan restock.',
+    judul: 'Dokumen penting diunggah',
+    deskripsi: 'Dokumen baru telah ditambahkan ke arsip sekolah.',
     waktu: 'Kemarin',
     dibaca: true,
   },
@@ -108,22 +109,29 @@ function NotificationBell() {
   )
 }
 
-export default function Layout({ children, title, subtitle, actions }) {
+// Catatan: Layout ini sekarang dipakai lewat nested routes React Router v6
+// (<Route element={<Layout />}>...</Route>), jadi konten halaman dirender
+// lewat <Outlet />, bukan lewat prop `children` seperti sebelumnya.
+// title/subtitle/actions jadi opsional — kalau halaman butuh judul di header,
+// bisa dikirim lewat context (useOutletContext) nanti kalau diperlukan.
+export default function Layout({ title, subtitle, actions }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
       <main className="flex-1 min-w-0">
         <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-slate-200 px-8 py-5 flex items-center justify-between">
           <div>
-            <h1 className="font-display text-2xl font-semibold text-slate-900">{title}</h1>
+            {title && <h1 className="font-display text-2xl font-semibold text-slate-900">{title}</h1>}
             {subtitle && <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ml-auto">
             <NotificationBell />
             {actions && <div className="flex items-center gap-3">{actions}</div>}
           </div>
         </header>
-        <div className="px-8 py-7">{children}</div>
+        <div className="px-8 py-7">
+          <Outlet />
+        </div>
       </main>
     </div>
   )
