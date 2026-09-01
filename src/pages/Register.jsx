@@ -58,58 +58,58 @@ function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-paper px-4 py-10">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 p-8">
+        <div className="bg-white rounded-2xl shadow-panel border border-ink-900/5 p-8">
           <div className="text-center mb-7">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center">
-              <User className="h-6 w-6 text-white" strokeWidth={2} />
+            <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-ink-900 flex items-center justify-center">
+              <User className="h-6 w-6 text-brass-400" strokeWidth={2} />
             </div>
-            <h2 className="text-2xl font-semibold text-slate-900">Daftar Akun</h2>
-            <p className="text-sm text-slate-500 mt-1">Buat akun baru untuk mulai bertransaksi</p>
+            <h2 className="font-display text-2xl text-ink-950">Daftar akun</h2>
+            <p className="text-sm text-ink-700/70 mt-1">Buat akun baru untuk mulai bertransaksi</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Nama Lengkap
+              <label className="block text-sm font-medium text-ink-800 mb-1.5">
+                Nama lengkap
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-700/40" />
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
                   placeholder="Nama lengkap Anda"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-ink-900/15 bg-paper/40 text-ink-950 placeholder:text-ink-700/40 focus:outline-none focus:ring-2 focus:ring-brass-500 focus:border-transparent transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-ink-800 mb-1.5">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-700/40" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="nama@email.com"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-ink-900/15 bg-paper/40 text-ink-950 placeholder:text-ink-700/40 focus:outline-none focus:ring-2 focus:ring-brass-500 focus:border-transparent transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-ink-800 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-700/40" />
                 <input
                   type="password"
                   value={password}
@@ -117,13 +117,13 @@ function Register() {
                   required
                   minLength={6}
                   placeholder="Minimal 6 karakter"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-ink-900/15 bg-paper/40 text-ink-950 placeholder:text-ink-700/40 focus:outline-none focus:ring-2 focus:ring-brass-500 focus:border-transparent transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-ink-800 mb-1.5">
                 Daftar sebagai
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -132,8 +132,8 @@ function Register() {
                   onClick={() => setRole('buyer')}
                   className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border-2 transition ${
                     role === 'buyer'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                      ? 'border-brass-500 bg-brass-400/10 text-ink-900'
+                      : 'border-ink-900/10 text-ink-700/60 hover:border-ink-900/25'
                   }`}
                 >
                   <ShoppingBag className="h-5 w-5" />
@@ -144,8 +144,8 @@ function Register() {
                   onClick={() => setRole('seller')}
                   className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border-2 transition ${
                     role === 'seller'
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                      ? 'border-brass-500 bg-brass-400/10 text-ink-900'
+                      : 'border-ink-900/10 text-ink-700/60 hover:border-ink-900/25'
                   }`}
                 >
                   <Store className="h-5 w-5" />
@@ -163,16 +163,16 @@ function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+              className="mt-1 w-full py-2.5 rounded-lg bg-ink-900 text-brass-400 font-medium hover:bg-ink-950 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {loading ? 'Memproses...' : 'Daftar'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
+          <p className="text-center text-sm text-ink-700/70 mt-6">
             Sudah punya akun?{' '}
-            <Link to="/login" className="text-indigo-600 font-medium hover:text-indigo-700">
+            <Link to="/login" className="text-brass-600 font-medium hover:text-brass-500">
               Masuk di sini
             </Link>
           </p>
