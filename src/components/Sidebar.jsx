@@ -1,125 +1,67 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
-  Users,
-  GraduationCap,
-  DoorOpen,
-  CalendarClock,
-  ClipboardCheck,
-  BookOpenCheck,
-  Megaphone,
-  Power,
-  Boxes,
-  CalendarDays,
-  Mail,
-  FileBadge,
-  FileText,
-  FileSignature,
-  Wallet,
-  DatabaseBackup,
-  UserPlus,
-  Landmark,
-  Library,
-  NotebookPen,
-  Archive,
-  UserCircle,
-  Images,
-  HardDrive,
+  Package,
+  Tags,
   ClipboardList,
-  Database,
-  IdCard,
-  FilePlus,
-  CalendarOff,
-  FileCheck2,
-  UserCog,
-  Award,
-  Video,
-  Receipt,
+  Store,
+  Power,
+  UserCircle,
+  ShoppingCart,
+  LayoutGrid,
+  Shirt,
+  Layers,
+  Sparkles,
+  Backpack,
+  Footprints,
 } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 
-// Menu ADMIN dikelompokkan per kategori supaya tidak jadi satu daftar panjang
+// Menu utama untuk penjual (seller/admin toko).
+// CATATAN: path (`to`) di bawah ini adalah tebakan berdasarkan pola rute yang
+// sudah ada (mis. '/produk/:id', '/keranjang', '/checkout'). Sesuaikan dengan
+// rute asli di App.jsx kamu kalau berbeda.
 const groupsAdmin = [
   {
-    label: null, // tanpa judul grup — selalu di atas
+    label: null,
     links: [
-      { to: '/', label: 'Dasbor', icon: LayoutDashboard, end: true },
+      { to: '/dashboard-penjualan', label: 'Dasbor Penjualan', icon: LayoutDashboard, end: true },
       { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
-      { to: '/rapat', label: 'Rapat Video', icon: Video },
-      { to: '/galeri', label: 'Galeri Kegiatan', icon: Images },
-      { to: '/dokumen', label: 'Dokumen Penting', icon: HardDrive },
-      { to: '/pengumuman', label: 'Pengumuman', icon: Megaphone },
     ],
   },
   {
-    label: 'Akademik',
+    label: 'Toko',
     links: [
-      { to: '/siswa', label: 'Data Siswa', icon: Users },
-      { to: '/guru', label: 'Data Guru', icon: GraduationCap },
-      { to: '/kelas', label: 'Kelas', icon: DoorOpen },
-      { to: '/jadwal', label: 'Jadwal Pelajaran', icon: CalendarClock },
-      { to: '/presensi', label: 'Presensi', icon: ClipboardCheck },
-      { to: '/nilai', label: 'Nilai Siswa', icon: BookOpenCheck },
-      { to: '/rapor', label: 'Rapor Siswa', icon: FileBadge },
-      { to: '/rpp', label: 'RPP', icon: NotebookPen },
-      { to: '/arsip-rpp', label: 'Arsip RPP', icon: Archive },
-      { to: '/sertifikat', label: 'Sertifikat & Penghargaan', icon: Award },
-      { to: '/buat-ujian', label: 'Buat Ujian', icon: FilePlus },
-      { to: '/hasil-ujian', label: 'Hasil Ujian', icon: ClipboardList },
-      { to: '/bank-soal', label: 'Bank Soal', icon: Database },
-    ],
-  },
-  {
-    label: 'Keuangan & Aset',
-    links: [
-      { to: '/keuangan', label: 'Keuangan', icon: Wallet },
-      { to: '/kuitansi', label: 'Kuitansi', icon: Receipt },
-      { to: '/perpustakaan', label: 'Perpustakaan', icon: Library },
-      { to: '/inventaris', label: 'Inventaris', icon: Boxes },
-    ],
-  },
-  {
-    label: 'Administrasi',
-    links: [
-      { to: '/pengajuan-surat-aktif', label: 'Pengajuan Surat Aktif', icon: FileCheck2 },
-      { to: '/perbaikan-data-siswa', label: 'Perbaikan Data Siswa', icon: UserCog },
-      { to: '/agenda', label: 'Agenda Sekolah', icon: CalendarDays },
-      { to: '/surat', label: 'Surat Masuk/Keluar', icon: Mail },
-      { to: '/surat-keterangan', label: 'Surat Keterangan', icon: FileSignature },
-      { to: '/ppdb-admin', label: 'PPDB Siswa Baru', icon: UserPlus },
-      { to: '/laporan', label: 'Laporan Bulanan', icon: FileText },
-      { to: '/hari-libur', label: 'Hari Libur', icon: CalendarOff },
-      { to: '/backup', label: 'Backup Data', icon: DatabaseBackup },
-      { to: '/profil-sekolah', label: 'Profil Sekolah', icon: Landmark },
-      { to: '/kartu', label: 'Cetak Kartu', icon: IdCard },
+      { to: '/produk-saya', label: 'Produk Saya', icon: Package },
+      { to: '/kategori', label: 'Kategori Produk', icon: Tags },
+      { to: '/pesanan-masuk', label: 'Pesanan Masuk', icon: ClipboardList },
+      { to: '/profil-toko', label: 'Profil Toko', icon: Store },
     ],
   },
 ]
 
-// Menu GURU: tetap ringkas, tidak perlu dikelompokkan
-const linksGuru = [
-  { to: '/', label: 'Dasbor', icon: LayoutDashboard, end: true },
+// Menu untuk buyer: cukup ringkas.
+const linksBuyer = [
+  { to: '/', label: 'Beranda', icon: LayoutDashboard, end: true },
   { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
-  { to: '/rapat', label: 'Rapat Video', icon: Video },
-  { to: '/galeri', label: 'Galeri Kegiatan', icon: Images },
-  { to: '/dokumen', label: 'Dokumen Penting', icon: HardDrive },
-  { to: '/siswa', label: 'Data Siswa', icon: Users },
-  { to: '/presensi', label: 'Presensi', icon: ClipboardCheck },
-  { to: '/nilai', label: 'Nilai Siswa', icon: BookOpenCheck },
-  { to: '/rapor', label: 'Rapor Siswa', icon: FileBadge },
-  { to: '/rpp', label: 'RPP', icon: NotebookPen },
-  { to: '/arsip-rpp', label: 'Arsip RPP', icon: Archive },
-  { to: '/sertifikat', label: 'Sertifikat & Penghargaan', icon: Award },
-  { to: '/pengajuan-surat-aktif', label: 'Pengajuan Surat Aktif', icon: FileCheck2 },
-  { to: '/perbaikan-data-siswa', label: 'Perbaikan Data Siswa', icon: UserCog },
-  { to: '/buat-ujian', label: 'Buat Ujian', icon: FilePlus },
-  { to: '/hasil-ujian', label: 'Hasil Ujian', icon: ClipboardList },
-  { to: '/bank-soal', label: 'Bank Soal', icon: Database },
-  { to: '/perpustakaan', label: 'Perpustakaan', icon: Library },
-  { to: '/jadwal', label: 'Jadwal Pelajaran', icon: CalendarClock },
-  { to: '/agenda', label: 'Agenda Sekolah', icon: CalendarDays },
-  { to: '/pengumuman', label: 'Pengumuman', icon: Megaphone },
+  { to: '/keranjang', label: 'Keranjang', icon: ShoppingCart },
+  { to: '/pesanan-saya', label: 'Pesanan Saya', icon: ClipboardList },
+]
+
+// Kategori produk — diambil dari nama-nama produk yang sudah ada di toko.
+// Link mengarah ke beranda dengan query param ?kategori=slug. Home.jsx perlu
+// membaca query param ini untuk memfilter produk (belum diimplementasikan —
+// kabari kalau mau sekalian saya tambahkan filternya di Home.jsx).
+const kategoriProduk = [
+  { slug: 'kaos', label: 'Kaos', icon: Shirt },
+  { slug: 'kemeja', label: 'Kemeja', icon: Shirt },
+  { slug: 'celana', label: 'Celana', icon: Layers },
+  { slug: 'jaket', label: 'Jaket', icon: Shirt },
+  { slug: 'hoodie', label: 'Hoodie', icon: Shirt },
+  { slug: 'dress', label: 'Dress', icon: Sparkles },
+  { slug: 'tas', label: 'Tas', icon: Backpack },
+  { slug: 'sepatu', label: 'Sepatu', icon: Footprints },
 ]
 
 function NavItem({ to, label, icon: Icon, end }) {
@@ -128,30 +70,37 @@ function NavItem({ to, label, icon: Icon, end }) {
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+        `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
           isActive
-            ? 'bg-gradient-to-r from-blue-500 to-indigo-400 text-white shadow-sm shadow-black/20'
+            ? 'bg-brass-400/15 text-brass-400'
             : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
         }`
       }
     >
-      {({ isActive }) => (
-        <>
-          <Icon
-            size={17}
-            strokeWidth={1.8}
-            fill={isActive ? 'rgba(255,255,255,0.25)' : 'currentColor'}
-            fillOpacity={isActive ? 1 : 0.15}
-          />
-          {label}
-        </>
-      )}
+      <Icon size={17} strokeWidth={1.8} />
+      {label}
     </NavLink>
   )
 }
 
-// Ambil URL foto guru dari kolom foto_profil_path (isinya path storage,
-// bukan URL lengkap) di bucket "foto-profil".
+function KategoriItem({ slug, label, icon: Icon }) {
+  return (
+    <NavLink
+      to={`/?kategori=${slug}`}
+      className="flex flex-col items-center gap-1.5 group"
+    >
+      <span className="h-11 w-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white/70 group-hover:bg-brass-400/15 group-hover:text-brass-400 group-hover:border-brass-400/30 transition-colors">
+        <Icon size={19} strokeWidth={1.8} />
+      </span>
+      <span className="text-[11px] text-white/60 group-hover:text-white/90 transition-colors text-center leading-tight">
+        {label}
+      </span>
+    </NavLink>
+  )
+}
+
+// Ambil URL foto profil dari kolom foto_profil_path (path storage, bukan URL
+// lengkap) di bucket "foto-profil".
 function getFotoUrl(fotoProfilPath) {
   if (!fotoProfilPath) return null
   if (fotoProfilPath.startsWith('http')) return fotoProfilPath
@@ -172,78 +121,42 @@ export default function Sidebar() {
   const namaTampil = profil?.nama_lengkap || session?.user?.email || 'Pengguna'
 
   return (
-    <aside className="w-64 shrink-0 bg-blue-950 text-white flex flex-col h-screen sticky top-0 border-r border-blue-900/50">
-      <div className="relative overflow-hidden px-4 py-5 border-b border-white/10 bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900">
-        {/* Motif batik dekoratif (senada dengan banner dashboard) */}
-        <svg
-          className="absolute inset-0 w-full h-full opacity-[0.35] pointer-events-none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="batikSidebar" width="46" height="46" patternUnits="userSpaceOnUse">
-              <circle cx="23" cy="23" r="12" fill="none" stroke="#fbbf24" strokeWidth="1.4" />
-              <circle cx="23" cy="23" r="4" fill="none" stroke="#fbbf24" strokeWidth="1.4" />
-              <path d="M23 5 v8 M23 33 v8 M5 23 h8 M33 23 h8" stroke="#fbbf24" strokeWidth="1.4" />
-              <path d="M10 10 l4 4 M32 10 l-4 4 M10 36 l4 -4 M32 36 l-4 -4" stroke="#fbbf24" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#batikSidebar)" />
-        </svg>
-
-        <div className="relative flex items-center gap-3">
+    <aside className="w-64 shrink-0 bg-ink-950 text-white flex flex-col h-screen sticky top-0 border-r border-white/5">
+      <div className="px-4 py-5 border-b border-white/10">
+        <div className="flex items-center gap-3">
           {fotoUrl ? (
             <img
               src={fotoUrl}
               alt={namaTampil}
-              className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/20"
+              className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/10"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-400 flex items-center justify-center font-display font-bold text-white text-sm shrink-0 border-2 border-white/20">
+            <div className="w-11 h-11 rounded-full bg-ink-900 border-2 border-brass-400/30 flex items-center justify-center font-display font-bold text-brass-400 text-sm shrink-0">
               {getInisial(namaTampil)}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-[13px] leading-tight truncate text-white">{namaTampil}</p>
-            <p className="text-[11px] text-white/50 mt-0.5">{isAdmin ? 'Admin' : 'Guru'}</p>
+            <p className="font-display font-semibold text-[13px] leading-tight truncate text-white">
+              {namaTampil}
+            </p>
+            <p className="text-[11px] text-white/40 mt-0.5">{isAdmin ? 'Penjual' : 'Pembeli'}</p>
           </div>
           <button
             onClick={signOut}
             title="Keluar"
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-500/15 hover:text-red-300 transition-colors shrink-0"
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors shrink-0"
           >
             <Power size={20} strokeWidth={2.2} />
           </button>
         </div>
       </div>
 
-      <nav className="relative flex-1 overflow-y-auto py-4 px-3 bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-950">
-        {/* Motif batik area menu — gaya berbeda dari header (kawung/diamond, bukan lingkaran) */}
-        <svg
-          className="absolute inset-0 w-full h-full opacity-[0.22] pointer-events-none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern
-              id="batikMenu"
-              width="36"
-              height="36"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-            >
-              <rect x="12" y="0" width="12" height="12" fill="none" stroke="#fbbf24" strokeWidth="1.2" />
-              <circle cx="18" cy="6" r="2.6" fill="#fbbf24" />
-              <path d="M0 18 L18 0 M18 36 L36 18" stroke="#fbbf24" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#batikMenu)" />
-        </svg>
-
-        <div className="relative">
+      <nav className="flex-1 overflow-y-auto py-4 px-3">
         {isAdmin ? (
           groupsAdmin.map((group, i) => (
             <div key={group.label ?? `top-${i}`} className={i > 0 ? 'mt-5' : ''}>
               {group.label && (
-                <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-wider uppercase text-white/35">
+                <p className="px-3 mb-1.5 text-[10px] font-semibold tracking-wider uppercase text-white/30">
                   {group.label}
                 </p>
               )}
@@ -256,11 +169,22 @@ export default function Sidebar() {
           ))
         ) : (
           <div className="space-y-1">
-            {linksGuru.map((link) => (
+            {linksBuyer.map((link) => (
               <NavItem key={link.to} {...link} />
             ))}
           </div>
         )}
+
+        <div className="mt-6">
+          <p className="px-3 mb-3 text-[10px] font-semibold tracking-wider uppercase text-white/30 flex items-center gap-1.5">
+            <LayoutGrid size={12} />
+            Kategori produk
+          </p>
+          <div className="grid grid-cols-3 gap-y-4 px-1">
+            {kategoriProduk.map((kategori) => (
+              <KategoriItem key={kategori.slug} {...kategori} />
+            ))}
+          </div>
         </div>
       </nav>
     </aside>
