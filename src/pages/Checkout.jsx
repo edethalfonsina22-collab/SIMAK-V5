@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { ShoppingBag, Loader2, AlertTriangle } from 'lucide-react'
 
 function generateOrderNumber() {
   const now = new Date()
@@ -213,42 +214,82 @@ function Checkout() {
     }
   }
 
-  if (loading) return <p style={{ padding: '16px' }}>Memuat checkout...</p>
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-paper">
+        <div className="flex items-center gap-2 text-ink-700/70 text-sm">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Memuat checkout...
+        </div>
+      </div>
+    )
+  }
 
   const total = items.reduce((sum, item) => sum + priceOf(item) * item.quantity, 0)
 
   return (
-    <div style={{ padding: '16px', maxWidth: '600px' }}>
-      <h2>Checkout</h2>
-
-      {items.map((item) => {
-        const variant = item.product_variants
-        const product = variant.products
-        return (
-          <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
-            <span>
-              {product.name} ({[variant.size, variant.color].filter(Boolean).join(' - ')}) x{item.quantity}
-            </span>
-            <span>Rp {Number(priceOf(item) * item.quantity).toLocaleString('id-ID')}</span>
+    <div className="min-h-screen bg-paper px-4 py-10">
+      <div className="w-full max-w-xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-panel border border-ink-900/5 p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-10 w-10 rounded-xl bg-ink-900 flex items-center justify-center flex-shrink-0">
+              <ShoppingBag className="h-5 w-5 text-brass-400" strokeWidth={2} />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl text-ink-950">Checkout</h2>
+              <p className="text-sm text-ink-700/70">Tinjau pesanan Anda sebelum membayar</p>
+            </div>
           </div>
-        )
-      })}
 
-      <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.1rem' }}>
-        <span>Total</span>
-        <span>Rp {Number(total).toLocaleString('id-ID')}</span>
+          <div className="divide-y divide-ink-900/10 border-t border-b border-ink-900/10">
+            {items.map((item) => {
+              const variant = item.product_variants
+              const product = variant.products
+              const variantLabel = [variant.size, variant.color].filter(Boolean).join(' - ')
+              return (
+                <div key={item.id} className="flex items-center justify-between gap-4 py-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-ink-950 truncate">{product.name}</p>
+                    <p className="text-xs text-ink-700/60 mt-0.5">
+                      {variantLabel && `${variantLabel} · `}x{item.quantity}
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-ink-950 whitespace-nowrap">
+                    Rp {Number(priceOf(item) * item.quantity).toLocaleString('id-ID')}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="flex items-center justify-between mt-5">
+            <span className="font-display text-base text-ink-950">Total</span>
+            <span className="font-display text-xl font-bold text-ink-950">
+              Rp {Number(total).toLocaleString('id-ID')}
+            </span>
+          </div>
+
+          {error && (
+            <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 mt-4">
+              <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600 m-0">{error}</p>
+            </div>
+          )}
+
+          {statusText && placingOrder && (
+            <p className="text-sm text-ink-700/60 mt-4">{statusText}</p>
+          )}
+
+          <button
+            onClick={handlePlaceOrder}
+            disabled={placingOrder}
+            className="mt-6 w-full py-2.5 rounded-lg bg-ink-900 text-brass-400 font-medium hover:bg-ink-950 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+          >
+            {placingOrder && <Loader2 className="h-4 w-4 animate-spin" />}
+            {placingOrder ? 'Memproses...' : 'Buat pesanan dan bayar'}
+          </button>
+        </div>
       </div>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {statusText && placingOrder && <p style={{ color: '#888' }}>{statusText}</p>}
-
-      <button
-        onClick={handlePlaceOrder}
-        disabled={placingOrder}
-        style={{ marginTop: '12px', padding: '12px 20px', cursor: 'pointer', width: '100%' }}
-      >
-        {placingOrder ? 'Memproses...' : 'Buat Pesanan & Bayar'}
-      </button>
     </div>
   )
 }
