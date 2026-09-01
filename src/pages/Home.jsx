@@ -1,7 +1,9 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { ImageOff, PackageX, RefreshCw, AlertTriangle, Pencil, Check, X, Loader2 } from 'lucide-react'
+import { ImageOff, PackageX, RefreshCw, AlertTriangle, Pencil, Check, X, Loader2, Camera } from 'lucide-react'
+
+const PRODUCT_IMAGE_BUCKET = 'product-images'
 
 function ProductCardSkeleton() {
   return (
@@ -19,13 +21,16 @@ function ProductCard({ product, isEditor, onSaved }) {
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(product.name)
   const [basePrice, setBasePrice] = useState(product.base_price)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
+  const fileInputRef = useRef(null)
 
   const images = [...(product.product_images || [])].sort(
     (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
   )
-  const coverImage = images[0]?.url
+  const coverImage = imagePreview || images[0]?.url
   const hasDiscount =
     product.compare_at_price && Number(product.compare_at_price) > Number(product.base_price)
   const isOutOfStock = product.stock !== undefined && product.stock !== null && product.stock <= 0
@@ -35,6 +40,8 @@ function ProductCard({ product, isEditor, onSaved }) {
     e.stopPropagation()
     setName(product.name)
     setBasePrice(product.base_price)
+    setImageFile(null)
+    setImagePreview(null)
     setSaveError(null)
     setIsEditing(true)
   }
@@ -43,7 +50,30 @@ function ProductCard({ product, isEditor, onSaved }) {
     e.preventDefault()
     e.stopPropagation()
     setIsEditing(false)
+    setImageFile(null)
+    setImagePreview(null)
     setSaveError(null)
+  }
+
+  function handleImagePick(e) {
+    e.stopPropagation()
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setSaveError('File harus berupa gambar.')
+      return
+    }
+
+    setSaveError(null)
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  function openImagePicker(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    fileInputRef.current?.click()
   }
 
   async function saveEdit(e) {
@@ -62,20 +92,72 @@ function ProductCard({ product, isEditor, onSaved }) {
     setSaving(true)
     setSaveError(null)
 
-    const { error } = await supabase
+    const { error: productError } = await supabase
       .from('products')
       .update({ name: name.trim(), base_price: Number(basePrice) })
       .eq('id', product.id)
 
-    setSaving(false)
-
-    if (error) {
-      setSaveError(error.message)
+    if (productError) {
+      setSaving(false)
+      setSaveError(productError.message)
       return
     }
 
+    let newImageUrl = null
+
+    if (imageFile) {
+      const ext = imageFile.name.split('.').pop()
+      const path = `${product.id}/${Date.now()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from(PRODUCT_IMAGE_BUCKET)
+        .upload(path, imageFile, { upsert: true })
+
+      if (uploadError) {
+        setSaving(false)
+        setSaveError(uploadError.message)
+        return
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from(PRODUCT_IMAGE_BUCKET)
+        .getPublicUrl(path)
+      newImageUrl = publicUrlData.publicUrl
+
+      const existingCover = images[0]
+
+      const { error: imageDbError } = existingCover
+        ? await supabase
+            .from('product_images')
+            .update({ url: newImageUrl })
+            .eq('id', existingCover.id)
+        : await supabase
+            .from('product_images')
+            .insert({ product_id: product.id, url: newImageUrl, sort_order: 0 })
+
+      if (imageDbError) {
+        setSaving(false)
+        setSaveError(imageDbError.message)
+        return
+      }
+    }
+
+    setSaving(false)
     setIsEditing(false)
-    onSaved?.(product.id, { name: name.trim(), base_price: Number(basePrice) })
+    setImageFile(null)
+    setImagePreview(null)
+
+    onSaved?.(product.id, {
+      name: name.trim(),
+      base_price: Number(basePrice),
+      ...(newImageUrl
+        ? {
+            product_images: images[0]
+              ? images.map((img, i) => (i === 0 ? { ...img, url: newImageUrl } : img))
+              : [{ url: newImageUrl, sort_order: 0 }],
+          }
+        : {}),
+    })
   }
 
   const cardInner = (
@@ -108,6 +190,28 @@ function ProductCard({ product, isEditor, onSaved }) {
           <span className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
             <Pencil size={14} />
           </span>
+        )}
+
+        {isEditing && (
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImagePick}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={openImagePicker}
+              className="absolute inset-0 bg-black/0 hover:bg-black/40 flex items-center justify-center text-white opacity-0 hover:opacity-100 transition-opacity"
+            >
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-black/60 px-2.5 py-1.5 rounded-lg">
+                <Camera size={14} />
+                Ganti gambar
+              </span>
+            </button>
+          </>
         )}
       </div>
 
@@ -257,6 +361,11 @@ export default function Home() {
       prev.map((p) => (p.id === productId ? { ...p, ...updates } : p))
     )
   }
+
+  // Catatan: gambar produk diunggah ke bucket Supabase Storage bernama
+  // "product-images" (lihat PRODUCT_IMAGE_BUCKET). Pastikan bucket ini ada
+  // dan bersifat publik, serta policy storage mengizinkan upload untuk
+  // user dengan role seller.
 
   return (
     <div className="p-4">
