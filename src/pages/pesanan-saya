@@ -1,10 +1,17 @@
-import ComingSoon from '../components/ComingSoon'
-
-export default function PesananSaya() {
+function PesananSaya() {
   return (
-    <ComingSoon
-      title="Pesanan Saya"
-      description="Riwayat dan status pesanan kamu akan tampil di sini. Segera hadir."
-    />
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center">
+        <div className="text-6xl mb-4">📦</div>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-2">
+          Pesanan Saya
+        </h1>
+        <p className="text-gray-500">
+          Halaman ini sedang dalam pengembangan. Segera hadir!
+        </p>
+      </div>
+    </div>
   )
 }
+
+export default PesananSaya
