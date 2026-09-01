@@ -319,7 +319,7 @@ export default function Home() {
     setError(null)
     const { data, error } = await supabase
       .from('products')
-      .select('*, product_images(url, sort_order)')
+      .select('*, product_images(id, url, sort_order)')
       .eq('status', 'active')
       .order('created_at', { ascending: false })
 
