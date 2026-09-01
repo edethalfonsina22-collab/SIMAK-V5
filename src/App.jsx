@@ -12,8 +12,10 @@ import Register from './pages/Register'
 import SellerDashboard from './pages/SellerDashboard'
 
 // Route ini hanya boleh diakses user yang sudah login dan role = 'seller'
+// (field diambil persis dari AuthContext.jsx: session, isAdmin, loading —
+// BUKAN user/profile, karena AuthContext tidak punya field bernama itu)
 function SellerRoute({ children }) {
-  const { user, profile, loading } = useAuth()
+  const { session, isAdmin, loading } = useAuth()
 
   if (loading) {
     return (
@@ -23,11 +25,11 @@ function SellerRoute({ children }) {
     )
   }
 
-  if (!user) {
+  if (!session) {
     return <Navigate to="/login" replace />
   }
 
-  if (profile?.role !== 'seller') {
+  if (!isAdmin) {
     return <Navigate to="/" replace />
   }
 
@@ -36,7 +38,7 @@ function SellerRoute({ children }) {
 
 // Route ini hanya boleh diakses user yang sudah login (buyer atau seller)
 function PrivateRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { session, loading } = useAuth()
 
   if (loading) {
     return (
@@ -46,7 +48,7 @@ function PrivateRoute({ children }) {
     )
   }
 
-  if (!user) {
+  if (!session) {
     return <Navigate to="/login" replace />
   }
 
