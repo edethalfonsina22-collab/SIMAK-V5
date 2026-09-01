@@ -1,0 +1,10 @@
+import ComingSoon from '../components/ComingSoon'
+
+export default function PesananSaya() {
+  return (
+    <ComingSoon
+      title="Pesanan Saya"
+      description="Riwayat dan status pesanan kamu akan tampil di sini. Segera hadir."
+    />
+  )
+}
