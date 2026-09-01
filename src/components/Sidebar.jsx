@@ -72,7 +72,7 @@ function NavItem({ to, label, icon: Icon, end }) {
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
           isActive
-            ? 'bg-brass-400/15 text-brass-400'
+            ? 'bg-teal-400/15 text-teal-300'
             : 'text-white/70 hover:bg-white/[0.08] hover:text-white'
         }`
       }
@@ -89,7 +89,7 @@ function KategoriItem({ slug, label, icon: Icon }) {
       to={`/?kategori=${slug}`}
       className="flex flex-col items-center gap-1.5 group"
     >
-      <span className="h-11 w-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white/70 group-hover:bg-brass-400/15 group-hover:text-brass-400 group-hover:border-brass-400/30 transition-colors">
+      <span className="h-11 w-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-white/70 group-hover:bg-teal-400/15 group-hover:text-teal-300 group-hover:border-teal-400/30 transition-colors">
         <Icon size={19} strokeWidth={1.8} />
       </span>
       <span className="text-[11px] text-white/60 group-hover:text-white/90 transition-colors text-center leading-tight">
@@ -121,7 +121,7 @@ export default function Sidebar() {
   const namaTampil = profil?.nama_lengkap || session?.user?.email || 'Pengguna'
 
   return (
-    <aside className="w-64 shrink-0 bg-ink-950 text-white flex flex-col h-screen sticky top-0 border-r border-white/5">
+    <aside className="w-64 shrink-0 bg-[#0e1015] text-white flex flex-col h-screen sticky top-0 border-r border-white/5">
       <div className="px-4 py-5 border-b border-white/10">
         <div className="flex items-center gap-3">
           {fotoUrl ? (
@@ -131,12 +131,12 @@ export default function Sidebar() {
               className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/10"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-ink-900 border-2 border-brass-400/30 flex items-center justify-center font-display font-bold text-brass-400 text-sm shrink-0">
+            <div className="w-11 h-11 rounded-full bg-white/[0.06] border-2 border-teal-400/30 flex items-center justify-center font-semibold text-teal-300 text-sm shrink-0">
               {getInisial(namaTampil)}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="font-display font-semibold text-[13px] leading-tight truncate text-white">
+            <p className="font-semibold text-[13px] leading-tight truncate text-white">
               {namaTampil}
             </p>
             <p className="text-[11px] text-white/40 mt-0.5">{isAdmin ? 'Penjual' : 'Pembeli'}</p>
@@ -144,7 +144,7 @@ export default function Sidebar() {
           <button
             onClick={signOut}
             title="Keluar"
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors shrink-0"
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors shrink-0"
           >
             <Power size={20} strokeWidth={2.2} />
           </button>
