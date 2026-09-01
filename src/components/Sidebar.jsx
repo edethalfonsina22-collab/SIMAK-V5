@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard,
   Package,
@@ -14,6 +14,7 @@ import {
   Sparkles,
   Backpack,
   Footprints,
+  LogIn,
 } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { supabase } from '../lib/supabaseClient'
@@ -123,32 +124,51 @@ export default function Sidebar() {
   return (
     <aside className="w-64 shrink-0 bg-[#0e1015] text-white flex flex-col h-screen sticky top-0 border-r border-white/5">
       <div className="px-4 py-5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          {fotoUrl ? (
-            <img
-              src={fotoUrl}
-              alt={namaTampil}
-              className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/10"
-            />
-          ) : (
-            <div className="w-11 h-11 rounded-full bg-white/[0.06] border-2 border-teal-400/30 flex items-center justify-center font-semibold text-teal-300 text-sm shrink-0">
-              {getInisial(namaTampil)}
+        {session ? (
+          <div className="flex items-center gap-3">
+            {fotoUrl ? (
+              <img
+                src={fotoUrl}
+                alt={namaTampil}
+                className="w-11 h-11 rounded-full object-cover shrink-0 border-2 border-white/10"
+              />
+            ) : (
+              <div className="w-11 h-11 rounded-full bg-white/[0.06] border-2 border-teal-400/30 flex items-center justify-center font-semibold text-teal-300 text-sm shrink-0">
+                {getInisial(namaTampil)}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-[13px] leading-tight truncate text-white">
+                {namaTampil}
+              </p>
+              <p className="text-[11px] text-white/40 mt-0.5">{isAdmin ? 'Penjual' : 'Pembeli'}</p>
             </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-[13px] leading-tight truncate text-white">
-              {namaTampil}
-            </p>
-            <p className="text-[11px] text-white/40 mt-0.5">{isAdmin ? 'Penjual' : 'Pembeli'}</p>
+            <button
+              onClick={signOut}
+              title="Keluar"
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors shrink-0"
+            >
+              <Power size={20} strokeWidth={2.2} />
+            </button>
           </div>
-          <button
-            onClick={signOut}
-            title="Keluar"
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors shrink-0"
-          >
-            <Power size={20} strokeWidth={2.2} />
-          </button>
-        </div>
+        ) : (
+          <Link to="/login" className="flex items-center gap-3 group">
+            <div className="w-11 h-11 rounded-full bg-white/[0.06] border-2 border-white/10 flex items-center justify-center text-white/50 shrink-0 group-hover:border-teal-400/30 group-hover:text-teal-300 transition-colors">
+              <UserCircle size={22} strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-[13px] leading-tight text-white group-hover:text-teal-300 transition-colors">
+                Masuk
+              </p>
+              <p className="text-[11px] text-white/40 mt-0.5">Belum login</p>
+            </div>
+            <LogIn
+              size={18}
+              strokeWidth={2}
+              className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0"
+            />
+          </Link>
+        )}
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-3">
