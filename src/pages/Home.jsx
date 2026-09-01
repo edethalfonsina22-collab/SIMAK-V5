@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { ImageOff, PackageX, RefreshCw, AlertTriangle, Pencil, Check, X, Loader2, Camera } from 'lucide-react'
+import { ImageOff, PackageX, RefreshCw, AlertTriangle, Pencil, Check, X, Loader2, Camera, ShoppingBag, Heart } from 'lucide-react'
 
 const PRODUCT_IMAGE_BUCKET = 'product-images'
 
@@ -25,6 +25,7 @@ function ProductCard({ product, isEditor, onSaved }) {
   const [imagePreview, setImagePreview] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
+  const [wishlisted, setWishlisted] = useState(false)
   const fileInputRef = useRef(null)
 
   const images = [...(product.product_images || [])].sort(
@@ -177,8 +178,10 @@ function ProductCard({ product, isEditor, onSaved }) {
         )}
 
         {hasDiscount && !isEditing && (
-          <span className="absolute top-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded-md bg-rose-500 text-white shadow-sm">
-            Diskon
+          <span className="absolute top-2 right-2 h-9 w-9 rounded-full bg-brass-500 text-ink-950 flex items-center justify-center text-[11px] font-semibold shadow-sm">
+            -{Math.round(
+              (1 - Number(product.base_price) / Number(product.compare_at_price)) * 100
+            )}%
           </span>
         )}
         {isOutOfStock && !isEditing && (
@@ -187,7 +190,7 @@ function ProductCard({ product, isEditor, onSaved }) {
           </span>
         )}
         {isEditor && !isEditing && (
-          <span className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="absolute top-2 left-2 h-7 w-7 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-ink-700 opacity-0 group-hover:opacity-100 transition-opacity">
             <Pencil size={14} />
           </span>
         )}
@@ -265,8 +268,8 @@ function ProductCard({ product, isEditor, onSaved }) {
             <h3 className="font-display text-sm font-semibold text-ink-950 truncate">
               {product.name}
             </h3>
-            <div className="flex items-baseline gap-2 mt-1">
-              <p className="font-display font-bold text-ink-950">
+            <div className="flex flex-col mt-1.5">
+              <p className="font-display font-bold text-lg text-ink-950">
                 Rp {Number(product.base_price).toLocaleString('id-ID')}
               </p>
               {hasDiscount && (
@@ -274,6 +277,28 @@ function ProductCard({ product, isEditor, onSaved }) {
                   Rp {Number(product.compare_at_price).toLocaleString('id-ID')}
                 </p>
               )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-3">
+              <span className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-ink-900 text-brass-400 group-hover:bg-ink-950 transition-colors">
+                <ShoppingBag size={14} />
+                Beli
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setWishlisted((w) => !w)
+                }}
+                aria-label={wishlisted ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+                className="h-8 w-8 flex-shrink-0 rounded-lg border border-ink-900/15 flex items-center justify-center text-ink-700 hover:bg-ink-900/5 transition-colors"
+              >
+                <Heart
+                  size={15}
+                  className={wishlisted ? 'fill-brass-500 text-brass-500' : ''}
+                />
+              </button>
             </div>
           </>
         )}
