@@ -27,7 +27,7 @@ const groupsAdmin = [
   {
     label: null,
     links: [
-      { to: '/dashboard-penjualan', label: 'Dasbor Penjualan', icon: LayoutDashboard, end: true },
+      { to: '/seller/dashboard', label: 'Dasbor Penjualan', icon: LayoutDashboard, end: true },
       { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
     ],
   },
@@ -46,7 +46,7 @@ const groupsAdmin = [
 const linksBuyer = [
   { to: '/', label: 'Beranda', icon: LayoutDashboard, end: true },
   { to: '/profil-saya', label: 'Profil Saya', icon: UserCircle },
-  { to: '/keranjang', label: 'Keranjang', icon: ShoppingCart },
+  { to: '/cart', label: 'Keranjang', icon: ShoppingCart },
   { to: '/pesanan-saya', label: 'Pesanan Saya', icon: ClipboardList },
 ]
 
